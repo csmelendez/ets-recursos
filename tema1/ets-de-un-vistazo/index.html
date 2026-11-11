@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La ETS de un vistazo: agentes, fases y dónde estamos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Plan: granate UCLM para la estructura de la ETS (fases, agentes);
+     gris para lo ya visto, verde para lo siguiente (Tema 1, evidencias), ámbar para lo pendiente (Tema 1, impacto y decisión). */
+  --granate:#A3002F; --granate-claro:#F7E4E9;
+  --verde:#25695C; --verde-claro:#E1EFEB;
+  --ambar:#B4621B; --ambar-claro:#F6EADF;
+  --visto:#8A8084; --visto-claro:#EEEAEC;
+  --tinta:#2A2125; --gris:#6C6266; --linea:#DED6D9; --papel:#FFFFFF; --fondo:#F6F3F4;
+  --f-disp:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;
+  --f-cuerpo:"IBM Plex Sans",Arial,Helvetica,sans-serif;
+  --t:900ms;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--fondo);color:var(--tinta);font-family:var(--f-cuerpo);display:flex;flex-direction:column}
+
+header{display:flex;align-items:center;gap:20px;padding:12px 24px;background:var(--papel);border-bottom:1px solid var(--linea);flex-wrap:wrap}
+.volver{font:600 13px var(--f-cuerpo);color:var(--granate);text-decoration:none;border:1px solid var(--granate);border-radius:999px;padding:4px 11px}
+.volver:hover{background:var(--granate);color:#fff}
+.marca{font-family:var(--f-disp);font-weight:700;color:var(--granate);font-size:15px;letter-spacing:.02em}
+.marca span{color:var(--gris);font-weight:500}
+nav.puntos{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+nav.puntos button{font:500 13px var(--f-cuerpo);border:1px solid var(--linea);background:var(--papel);color:var(--gris);border-radius:999px;padding:5px 11px;cursor:pointer}
+nav.puntos button[aria-current="step"]{background:var(--granate);border-color:var(--granate);color:#fff}
+nav.puntos button:focus-visible,.ctl button:focus-visible{outline:3px solid var(--ambar);outline-offset:2px}
+
+main{flex:1;display:grid;grid-template-columns:minmax(280px,360px) 1fr;min-height:0}
+aside{padding:28px 26px 20px;display:flex;flex-direction:column;gap:12px;background:var(--papel);border-right:1px solid var(--linea);overflow:auto}
+.num{font-family:var(--f-disp);font-weight:600;color:var(--granate);font-size:15px;letter-spacing:.06em;text-transform:uppercase}
+aside h1{font-family:var(--f-disp);font-weight:700;font-size:40px;line-height:1.02;margin:0;text-wrap:balance}
+.pregunta{font-size:19px;font-style:italic;color:var(--granate);margin:0}
+.cuerpo{font-size:16px;line-height:1.55;margin:0;max-width:62ch}
+.fuente{font-size:12.5px;color:var(--gris);margin-top:auto;border-top:1px solid var(--linea);padding-top:10px;line-height:1.45}
+.ctl{display:flex;gap:8px;align-items:center}
+.ctl button{font:600 14px var(--f-cuerpo);border:1px solid var(--granate);background:var(--papel);color:var(--granate);border-radius:6px;padding:8px 14px;cursor:pointer}
+.ctl button.prim{background:var(--granate);color:#fff}
+.ctl button:disabled{opacity:.35;cursor:default}
+.ctl .paso{font-size:12.5px;color:var(--gris);margin-left:6px;font-variant-numeric:tabular-nums}
+
+.marco{position:relative;min-height:0;overflow:hidden;cursor:pointer}
+.stage{position:absolute;left:0;top:0;width:1000px;height:640px;transform-origin:0 0}
+.obj{position:absolute;left:0;top:0;transform-origin:0 0;opacity:0;pointer-events:none;
+  transition:transform var(--t) cubic-bezier(.6,.05,.25,1),opacity calc(var(--t)*.8) ease}
+.fade{opacity:0;transition:opacity 600ms ease,transform 600ms ease;transform:translateY(8px)}
+.fade.on{opacity:1;transform:none}
+
+.card{background:var(--papel);border:1px solid var(--linea);border-radius:10px;box-shadow:0 6px 20px rgba(60,20,30,.08);padding:18px 20px}
+.tipo{font:600 12px var(--f-cuerpo);letter-spacing:.08em;text-transform:uppercase;color:var(--gris)}
+.cod{font:700 34px/1.05 var(--f-disp);color:var(--granate);margin:2px 0 10px}
+
+/* Escena 1: CE frente a ETS */
+#ce,#ets{width:450px}
+[data-s="0"] #ce{transform:translate(30px,40px);opacity:1}
+[data-s="0"] #ets{transform:translate(520px,40px);opacity:1}
+#ce{transform:translate(-80px,40px)} #ets{transform:translate(620px,40px)}
+#ets{border-top:5px solid var(--granate)} #ce{border-top:5px solid var(--tinta)}
+#ce .cod{color:var(--tinta)}
+.fila{display:grid;grid-template-columns:92px 1fr;gap:10px;padding:8px 0;border-top:1px solid var(--linea);font-size:14.5px;line-height:1.35}
+.fila b{font:600 13px var(--f-cuerpo);color:var(--gris);text-transform:uppercase;letter-spacing:.04em;padding-top:1px}
+.banda{position:absolute;left:30px;width:940px;padding:14px 18px;border-left:4px solid var(--granate);background:var(--papel);border-radius:0 8px 8px 0;font-size:16px;line-height:1.45}
+
+/* Escena 2: agentes */
+#agentes{width:1000px;height:640px}
+[data-s="1"] #agentes{opacity:1}
+.colag{position:absolute;top:28px;width:226px}
+.colag h3{font:700 15px var(--f-disp);text-transform:uppercase;letter-spacing:.06em;color:var(--granate);margin:0 0 8px;padding-bottom:6px;border-bottom:2px solid var(--granate)}
+.ag{background:var(--papel);border:1px solid var(--linea);border-radius:8px;padding:8px 10px;margin-bottom:7px;transition:background 500ms,box-shadow 500ms,opacity 500ms}
+.ag b{display:block;font:700 15px/1.15 var(--f-disp)}
+.ag small{display:block;font-size:12px;line-height:1.3;color:var(--gris);margin-top:2px}
+[data-s="1"][data-t="1"] .ag{opacity:.4}
+[data-s="1"][data-t="1"] .ag.pt{opacity:1;background:var(--granate-claro);box-shadow:inset 0 0 0 2px var(--granate)}
+
+/* Tira de fases persistente */
+#tira{width:944px;height:160px}
+[data-s="2"] #tira{transform:translate(28px,150px);opacity:1}
+[data-s="3"] #tira,[data-s="4"] #tira,[data-s="5"] #tira,[data-s="6"] #tira{transform:translate(179px,16px) scale(.68);opacity:1}
+.fs{position:absolute;top:0;width:128px;height:150px;border-radius:10px;background:var(--papel);border:1px solid var(--linea);padding:12px 11px;display:flex;flex-direction:column;transition:opacity 600ms,box-shadow 600ms,background 600ms}
+.fs .n{font:600 12px var(--f-cuerpo);letter-spacing:.07em;text-transform:uppercase;color:var(--gris)}
+.fs .t{font:700 19px/1.08 var(--f-disp);margin-top:4px}
+.fs.pre{background:transparent;border-style:dashed}
+.fs .bars{display:flex;gap:3px;margin-top:auto;opacity:0;transition:opacity 600ms}
+.fs .bars i{flex:1;height:9px;border-radius:3px}
+i.v{background:var(--visto)} i.s{background:var(--verde)} i.p{background:var(--ambar)}
+[data-s="2"][data-t="1"] .fs .bars,[data-s="3"] .fs .bars,[data-s="4"] .fs .bars,[data-s="5"] .fs .bars,[data-s="6"] .fs .bars{opacity:1}
+.fs.cur{box-shadow:0 0 0 3px var(--granate),0 8px 18px rgba(163,0,47,.18);background:#fff}
+.fs.off{opacity:.3}
+.flechas{position:absolute;left:0;top:70px;width:944px;height:12px;pointer-events:none}
+.leyenda{position:absolute;left:28px;top:360px;width:944px;display:flex;gap:26px;font-size:15px}
+.leyenda span{display:flex;align-items:center;gap:8px}
+.leyenda i{width:22px;height:10px;border-radius:3px;display:inline-block}
+.nota3{position:absolute;left:28px;top:420px;width:944px;font-size:15.5px;line-height:1.5;color:#43393D}
+
+/* Paneles de las escenas de fase */
+.panel{position:absolute;left:30px;top:150px;width:940px;height:470px}
+.izq{position:absolute;left:0;top:0;width:560px}
+.der{position:absolute;left:590px;top:0;width:350px;padding:16px 18px;border-radius:10px;background:var(--granate-claro);border-left:4px solid var(--granate);font-size:15px;line-height:1.5}
+.der .tipo{color:var(--granate);margin-bottom:6px}
+.der .hito{font:700 26px/1 var(--f-disp);color:var(--granate);margin-bottom:6px}
+.lbl{font:600 12px var(--f-cuerpo);letter-spacing:.08em;text-transform:uppercase;color:var(--gris);margin:0 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.chip{font:600 13.5px var(--f-cuerpo);padding:4px 11px;border-radius:999px;background:var(--papel);border:1px solid var(--granate);color:var(--granate)}
+.tr{display:grid;grid-template-columns:160px 1fr;gap:12px;align-items:center;padding:8px 0;border-top:1px solid var(--linea);font-size:14.5px;line-height:1.35}
+.bd{font:700 13px var(--f-disp);letter-spacing:.03em;color:#fff;border-radius:4px;padding:4px 8px;text-align:center}
+.bd.v{background:var(--visto)} .bd.s{background:var(--verde)} .bd.p{background:var(--ambar)}
+.que{font-size:16px;line-height:1.5;margin:0 0 18px;color:#43393D}
+#p3,#p4,#p5,#p6{opacity:0;transition:opacity 500ms}
+[data-s="3"] #p3,[data-s="4"] #p4,[data-s="5"] #p5,[data-s="6"] #p6{opacity:1}
+
+/* Escena final: dónde estamos */
+#curso{width:1000px;height:640px}
+[data-s="7"] #curso{opacity:1}
+.tbloque{position:absolute;top:22px;height:190px}
+.tcab{font:700 15px var(--f-disp);text-transform:uppercase;letter-spacing:.06em;color:var(--granate);border-bottom:2px solid var(--granate);padding-bottom:4px;margin-bottom:8px}
+.tema{position:absolute;top:34px;width:176px;height:150px;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:4px}
+.tema b{font:700 25px/1 var(--f-disp)}
+.tema span{font-size:13px;line-height:1.3}
+.tema small{margin-top:auto;font:600 11.5px var(--f-cuerpo);letter-spacing:.07em;text-transform:uppercase}
+.tema.v{background:var(--visto-claro);color:#4b4246}
+.tema.s{background:var(--verde);color:#fff;box-shadow:0 8px 20px rgba(37,105,92,.3)}
+.tema.p{background:var(--ambar-claro);color:#6b3a10;border:1px dashed var(--ambar)}
+.cadena{position:absolute;left:30px;top:250px;width:940px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.eslabon{border-radius:10px;background:var(--papel);border:1px solid var(--linea);padding:14px 14px;font-size:14px;line-height:1.4}
+.eslabon .tipo{margin-bottom:4px}
+.eslabon h4{margin:0 0 4px;font:700 19px/1.1 var(--f-disp)}
+.eslabon.s{border:2px solid var(--verde);background:var(--verde-claro)}
+.eslabon.s h4{color:var(--verde)}
+.eslabon.p h4{color:var(--ambar)}
+.cierre{position:absolute;left:30px;top:470px;width:940px;padding:16px 20px;border-radius:10px;background:var(--verde);color:#fff;font-size:16px;line-height:1.5}
+.cierre b{font-family:var(--f-disp);font-size:19px;display:block;margin-bottom:2px}
+
+@media (max-width:900px){
+  main{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  aside{border-right:0;border-bottom:1px solid var(--linea);padding:18px 16px}
+  aside h1{font-size:30px}
+  .marco{min-height:62vw}
+  header{padding:10px 16px}
+}
+@media (prefers-reduced-motion:reduce){*{transition-duration:1ms !important}}
+</style>
+</head>
+<body data-s="0" data-t="0">
+<header>
+  <a class="volver" href="../../index.html">← Colección</a>
+  <div class="marca">Tema 1 · Repaso de la ETS <span>· Caso guía: la protonterapia (AQuAS, RedETS, 2024)</span></div>
+  <nav class="puntos" aria-label="Escenas"></nav>
+</header>
+<main>
+  <aside aria-live="polite">
+    <div class="num" id="num">Escena 1</div>
+    <h1 id="tit"></h1>
+    <p class="pregunta" id="preg"></p>
+    <p class="cuerpo" id="cuerpo"></p>
+    <div class="ctl">
+      <button type="button" id="ant">← Anterior</button>
+      <button type="button" id="sig" class="prim">Siguiente →</button>
+      <span class="paso" id="paso"></span>
+    </div>
+    <div class="fuente" id="fuente"></div>
+  </aside>
+
+  <div class="marco" id="marco" role="img" aria-label="Agentes y fases de la evaluación de tecnologías sanitarias, con el caso de la protonterapia">
+    <div class="stage" id="stage">
+
+      <!-- 1. CE frente a ETS -->
+      <div class="obj card" id="ce">
+        <div class="tipo">Acceso al mercado</div>
+        <div class="cod">Marcado CE</div>
+        <div class="fila"><b>Pregunta</b><span>¿Es seguro y funciona como afirma el fabricante?</span></div>
+        <div class="fila"><b>Normas</b><span>Reglamentos (UE) 2017/745 (MDR) y 2017/746 (IVDR)</span></div>
+        <div class="fila"><b>Agentes</b><span>Fabricante, organismos notificados y AEMPS</span></div>
+        <div class="fila"><b>Momento</b><span>Antes de comercializar, con vigilancia posterior</span></div>
+      </div>
+      <div class="obj card" id="ets">
+        <div class="tipo">Valor para el sistema</div>
+        <div class="cod">ETS</div>
+        <div class="fila"><b>Pregunta</b><span>¿Aporta lo suficiente frente a las alternativas para financiarlo?</span></div>
+        <div class="fila"><b>Normas</b><span>Reglamento (UE) 2021/2282 y Real Decreto 415/2026</span></div>
+        <div class="fila"><b>Agentes</b><span>Agencias de ETS, Grupo de adopción y órganos decisores</span></div>
+        <div class="fila"><b>Momento</b><span>Todo el ciclo de vida, incluida la desinversión</span></div>
+      </div>
+      <div class="banda fade" data-at="0:1" style="top:470px">Un producto con marcado CE puede seguir siendo objeto de ETS. En la protonterapia ni siquiera se evalúa un equipo: el informe de 2024 analiza la técnica, aplicada a distintas indicaciones oncológicas, frente a la radioterapia con fotones.</div>
+
+      <!-- 2. Agentes -->
+      <div class="obj" id="agentes">
+        <div class="colag" style="left:30px"><h3>Unión Europea</h3>
+          <div class="ag"><b>HTACG</b><small>Coordina a los Estados miembros: programa de trabajo, guías y selección de productos para JCA.</small></div>
+          <div class="ag"><b>Evaluadores de JCA</b><small>Eficacia y seguridad relativas de determinados medicamentos y productos de alto riesgo.</small></div>
+        </div>
+        <div class="colag" style="left:268px"><h3>España</h3>
+          <div class="ag"><b>Consejo de Gobernanza</b><small>Programa anual y directrices metodológicas.</small></div>
+          <div class="ag pt"><b>RedETS · Oficina no farmacológica</b><small>Agencias como AQuAS. Evalúan productos, procedimientos y modelos organizativos.</small></div>
+          <div class="ag"><b>AEMPS</b><small>Autoridad de productos sanitarios y Oficina de evaluación de medicamentos.</small></div>
+          <div class="ag"><b>Grupo de adopción</b><small>Valoración final. CC. AA., profesionales, economía de la salud y pacientes.</small></div>
+          <div class="ag pt"><b>Órganos decisores</b><small>Ministerio de Sanidad (Dirección General de Cartera Común) y CPAF.</small></div>
+        </div>
+        <div class="colag" style="left:506px"><h3>Territorio y hospital</h3>
+          <div class="ag"><b>Comunidades autónomas</b><small>Solicitan evaluaciones, priorizan y adaptan las decisiones.</small></div>
+          <div class="ag"><b>Hospital e ingeniería clínica</b><small>Compra, implantación, mantenimiento y seguimiento (HB-HTA).</small></div>
+          <div class="ag"><b>Profesionales y sociedades científicas</b><small>Detectan necesidades y usan la tecnología.</small></div>
+        </div>
+        <div class="colag" style="left:744px"><h3>Fuera de la Administración</h3>
+          <div class="ag"><b>Fabricantes e industria</b><small>Desarrollan, solicitan evaluaciones y consultas científicas conjuntas.</small></div>
+          <div class="ag"><b>Organismos notificados</b><small>Evaluación de la conformidad para el marcado CE.</small></div>
+          <div class="ag"><b>Pacientes y ciudadanía</b><small>Consultas, aportaciones y representación en órganos de valoración.</small></div>
+        </div>
+        <div class="banda fade" data-at="1:1" style="top:540px">En la protonterapia: AQuAS evaluó dentro de RedETS, y la Dirección General de Cartera Común decidió en 2020 qué indicaciones se financian.</div>
+      </div>
+
+      <!-- Tira de fases (persistente de la escena 3 a la 7) -->
+      <div class="obj" id="tira">
+        <div class="fs pre" data-f="pre" style="left:0"><span class="n">Previa</span><span class="t">Marcado CE</span><span class="bars"><i class="v"></i></span></div>
+        <div class="fs" data-f="ide" style="left:136px"><span class="n">Fase 1</span><span class="t">Identi&shy;ficación</span><span class="bars"><i class="v"></i></span></div>
+        <div class="fs" data-f="pri" style="left:272px"><span class="n">Fase 2</span><span class="t">Priori&shy;zación</span><span class="bars"><i class="v"></i></span></div>
+        <div class="fs" data-f="eva" style="left:408px"><span class="n">Fase 3</span><span class="t">Evaluación</span><span class="bars"><i class="v"></i><i class="v"></i><i class="s"></i><i class="p"></i></span></div>
+        <div class="fs" data-f="val" style="left:544px"><span class="n">Fase 4</span><span class="t">Valoración</span><span class="bars"><i class="p"></i></span></div>
+        <div class="fs" data-f="dec" style="left:680px"><span class="n">Fase 5</span><span class="t">Decisión</span><span class="bars"><i class="v"></i><i class="p"></i></span></div>
+        <div class="fs" data-f="imp" style="left:816px"><span class="n">Fase 6</span><span class="t">Implantación, seguimiento y difusión</span><span class="bars"><i class="p"></i></span></div>
+      </div>
+      <div class="leyenda fade" data-at="2:1"><span><i class="v"></i>Ya visto en la asignatura</span><span><i class="s"></i>Lo siguiente: Tema 1 · Evidencias</span><span><i class="p"></i>Queda por ver: Tema 1 · Impacto y decisión</span></div>
+      <div class="nota3 fade" data-at="2:1">Las fases van en orden, pero se vuelve atrás cada vez que aparece evidencia nueva o cambia el contexto. La protonterapia ha pasado ya tres veces por la evaluación: 2009, 2014 y 2024.</div>
+
+      <!-- 4. Identificación y priorización -->
+      <div class="panel" id="p3">
+        <div class="izq">
+          <p class="que">Detectar tecnologías nuevas, emergentes o de uso creciente y decidir cuáles se evalúan primero: gravedad, necesidad no cubierta, impacto económico, difusión y equidad.</p>
+          <div class="lbl">Quién interviene</div>
+          <div class="chips"><span class="chip">Profesionales</span><span class="chip">Industria</span><span class="chip">Comunidades autónomas</span><span class="chip">RedETS (PriTec)</span><span class="chip">Consejo de Gobernanza</span></div>
+          <div class="lbl">Dónde lo vemos</div>
+          <div class="tr"><span class="bd v">Tema 1 · visto</span><span>Fuentes de identificación, PriTec y plan anual de trabajo de RedETS</span></div>
+        </div>
+        <div class="der fade" data-at="3:1"><div class="tipo">En la protonterapia</div><div class="hito">2009 · 2014</div>AQuAS revisa la evidencia sobre hadronterapia para planificar centros en España. En 2014 la actualiza dentro del plan de trabajo de RedETS: 73 estudios primarios, sobre todo series de casos retrospectivas de calidad baja.</div>
+      </div>
+
+      <!-- 5. Evaluación -->
+      <div class="panel" id="p4">
+        <div class="izq">
+          <p class="que" style="margin-bottom:12px">El informe: evidencia clínica, evaluación económica y, cuando procede, impacto organizativo, ético y social.</p>
+          <div class="lbl">Quién interviene</div>
+          <div class="chips" style="margin-bottom:12px"><span class="chip">RedETS · AQuAS</span><span class="chip">AEMPS (medicamentos)</span><span class="chip">Evaluadores de JCA</span></div>
+          <div class="lbl">Dónde lo vemos</div>
+          <div class="tr"><span class="bd v">Tema 2 · visto</span><span>Bioestadística: lo que aporta una prueba diagnóstica y lo esencial de la supervivencia</span></div>
+          <div class="tr"><span class="bd v">Tema 3 · visto</span><span>Evaluación económica: coste-efectividad, AVAC e impacto presupuestario</span></div>
+          <div class="tr"><span class="bd s">Tema 1 · siguiente</span><span>Evidencias: tipos de estudio, revisión sistemática, riesgo de sesgo y GRADE</span></div>
+          <div class="tr"><span class="bd p">Tema 1 · pendiente</span><span>Impacto clínico, en calidad de vida, en equidad y en la organización</span></div>
+        </div>
+        <div class="der fade" data-at="4:1"><div class="tipo">En la protonterapia</div><div class="hito">2024</div>Revisión sistemática con estándares Cochrane, PRISMA y GRADE, con una pregunta PICO-D clínica y otra económica. Solo se evalúan las indicaciones todavía no aprobadas. El propio informe avisa de que la ética, la equidad y el impacto organizativo para el SNS no son su objeto principal.</div>
+      </div>
+
+      <!-- 6. Valoración y decisión -->
+      <div class="panel" id="p5">
+        <div class="izq">
+          <p class="que">Interpretar los resultados en el contexto del sistema y decidir: incorporar, incorporar con restricciones, no incorporar, desinvertir o limitar el uso a investigación.</p>
+          <div class="lbl">Quién interviene</div>
+          <div class="chips"><span class="chip">Grupo de adopción</span><span class="chip">Pacientes</span><span class="chip">Comunidades autónomas</span><span class="chip">Órganos decisores</span><span class="chip">Hospital</span></div>
+          <div class="lbl">Dónde lo vemos</div>
+          <div class="tr"><span class="bd v">Tema 1 · visto</span><span>Evaluar, valorar y decidir son funciones separadas; tipos de decisión</span></div>
+          <div class="tr"><span class="bd p">Tema 1 · pendiente</span><span>Decisión multicriterio, mesas de expertos y estrategias de decisión</span></div>
+        </div>
+        <div class="der fade" data-at="5:1"><div class="tipo">En la protonterapia</div><div class="hito">30 nov 2020</div>Una resolución de la Dirección General de Cartera Común aprueba unas indicaciones y desaconseja otras. La financiación no es todo o nada. El informe de 2024 añade que la eficiencia depende de la selección de pacientes y que derivarlos a otro centro tiene consecuencias: elementos que solo se pesan al valorar.</div>
+      </div>
+
+      <!-- 7. Implantación, seguimiento y difusión -->
+      <div class="panel" id="p6">
+        <div class="izq">
+          <p class="que">Poner en marcha la decisión, vigilar los resultados reales, reevaluar si cambia la evidencia y comunicar el informe.</p>
+          <div class="lbl">Quién interviene</div>
+          <div class="chips"><span class="chip">Hospital e ingeniería clínica</span><span class="chip">Profesionales</span><span class="chip">AEMPS y organismos notificados</span><span class="chip">RedETS</span><span class="chip">Pacientes</span></div>
+          <div class="lbl">Dónde lo vemos</div>
+          <div class="tr"><span class="bd p">Tema 1 · pendiente</span><span>Documentación y difusión de la evaluación; normativa aplicada al caso</span></div>
+        </div>
+        <div class="der fade" data-at="6:1"><div class="tipo">En la protonterapia</div><div class="hito">Después de 2024</div>El informe recomienda un registro nacional que estandarice los resultados de los pacientes tratados y los compare con la mejor radioterapia con fotones. Con dos centros privados y once equipos públicos previstos, ese registro alimentaría la próxima reevaluación.</div>
+      </div>
+
+      <!-- 8. Dónde estamos -->
+      <div class="obj" id="curso">
+        <div class="tbloque" style="left:30px;width:556px"><div class="tcab">Tema 1 · Fundamentos de ETS</div>
+          <div class="tema v" style="left:0"><b>Marco</b><span>Agentes, normas y proceso</span><small>Visto</small></div>
+          <div class="tema s" style="left:184px"><b>Evidencias</b><span>Tipos de estudio y revisión sistemática</span><small>Siguiente</small></div>
+          <div class="tema p" style="left:368px"><b>Impacto</b><span>Impacto, decisión y difusión</span><small>Pendiente</small></div>
+        </div>
+        <div class="tbloque" style="left:606px;width:176px"><div class="tcab">Tema 2</div>
+          <div class="tema v" style="left:0"><b>Bioestadística</b><span>Pruebas diagnósticas y lo esencial de la supervivencia</span><small>Visto</small></div>
+        </div>
+        <div class="tbloque" style="left:794px;width:176px"><div class="tcab">Tema 3</div>
+          <div class="tema v" style="left:0"><b>Economía</b><span>Evaluación económica</span><small>Visto</small></div>
+        </div>
+        <div class="cadena fade" data-at="7:1">
+          <div class="eslabon"><div class="tipo">Tema 2</div><h4>Medir resultados</h4>Cada estudio da sus números: sensibilidad y especificidad, una curva de supervivencia.</div>
+          <div class="eslabon s"><div class="tipo">Tema 1 · Evidencias</div><h4>Reunir y valorar</h4>Encontrar todos los estudios, juzgar cuánto fiarse de cada uno y resumirlos sin sesgo.</div>
+          <div class="eslabon"><div class="tipo">Tema 3</div><h4>Traducir a costes</h4>El efecto que estima la revisión entra en el modelo económico.</div>
+          <div class="eslabon p"><div class="tipo">Tema 1 · Impacto</div><h4>Decidir y comunicar</h4>Impacto, valoración, decisión y difusión.</div>
+        </div>
+        <div class="cierre fade" data-at="7:1"><b>Lo siguiente: el bloque de evidencias del Tema 1</b>Es el eslabón que falta. Un modelo económico construido sobre evidencia de certeza muy baja da un resultado igual de incierto. Veremos cómo hizo AQuAS su revisión: la pregunta PICO-D, la búsqueda, la selección con PRISMA, el riesgo de sesgo y la certeza con GRADE.</div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script>
+(function(){
+  var escenas=[
+    {t:"Antes de la ETS",p:"¿Basta con que un producto tenga marcado CE?",c:"No. El marcado CE comprueba la seguridad y el funcionamiento para la finalidad que declara el fabricante. La ETS pregunta otra cosa: si la tecnología aporta lo suficiente frente a las alternativas como para financiarla con dinero público. Son dos procesos complementarios, con normas y agentes distintos.",f:"Reglamentos (UE) 2017/745, 2017/746 y 2021/2282; Real Decreto 415/2026.",n:2},
+    {t:"Los agentes",p:"¿Quién interviene en una ETS?",c:"Cuatro grupos. La Unión Europea armoniza una parte de la evaluación clínica. España evalúa, valora y decide sobre financiación y cartera. Comunidades autónomas y hospitales adaptan y aplican. Fuera de la Administración están la industria, los organismos notificados y los pacientes.",f:"Reglamento (UE) 2021/2282, arts. 3 y 7; Real Decreto 415/2026, arts. 3 a 5, 25 y disposición adicional primera.",n:2},
+    {t:"Las fases",p:"¿Qué pasos tiene una evaluación?",c:"Una fase previa, que no es ETS, y seis fases: identificación, priorización, evaluación, valoración, decisión e implantación con seguimiento. Las barras indican qué parte de cada fase habéis trabajado ya en la asignatura.",f:"Tema 1, apartado «Proceso general de ETS».",n:2},
+    {t:"Identificación y priorización",p:"¿Cómo llega una tecnología a evaluarse?",c:"Alguien la detecta (profesionales, industria, comunidades autónomas) y RedETS decide qué evaluar primero con criterios explícitos. Esta parte ya la vimos al principio del Tema 1.",f:"Tema 1; informe AQuAS/RedETS sobre protonterapia (2024), antecedentes.",n:2},
+    {t:"Evaluación",p:"¿Qué entra en el informe?",c:"Es la fase que más partes de la asignatura ocupa. Ya sabéis cómo se miden los resultados (Tema 2) y cómo se traducen en costes (Tema 3). Dentro del Tema 1 quedan dos piezas: cómo se reúne y se valora toda la evidencia disponible, y el análisis de impacto.",f:"Moltó-Puigmartí C, et al. La protonterapia en el tratamiento del cáncer. AQuAS; RedETS; 2024.",n:2},
+    {t:"Valoración y decisión",p:"¿Quién decide, y con qué?",c:"El Real Decreto 415/2026 separa las funciones: las Oficinas evalúan sin pronunciarse sobre precio ni financiación, el Grupo de adopción valora y los órganos competentes deciden. Las evaluaciones no son vinculantes.",f:"Real Decreto 415/2026, arts. 7.5 y 15; Resolución de 30 de noviembre de 2020 de la Dirección General de Cartera Común de Servicios del SNS y Farmacia.",n:2},
+    {t:"Implantación, seguimiento y difusión",p:"¿Y después de decidir?",c:"La decisión se aplica en los centros, se vigila qué ocurre en la práctica real y se reevalúa si cambia la evidencia. El informe se publica y se comunica. Lo veremos al final del Tema 1.",f:"Tema 1; informe AQuAS/RedETS sobre protonterapia (2024), recomendaciones.",n:2},
+    {t:"Dónde estamos",p:"¿Qué hemos visto y qué falta?",c:"La asignatura tiene tres temas. Habéis terminado la bioestadística (Tema 2) y la evaluación económica (Tema 3). Del Tema 1 quedan dos bloques: las evidencias, que unen los estudios sueltos en una conclusión fiable, y el impacto y la decisión, que llevan esa conclusión hasta el sistema sanitario.",f:"Programa de la asignatura.",n:2}
+  ];
+  var fasesActivas={3:["ide","pri"],4:["eva"],5:["val","dec"],6:["imp"]};
+  var b=document.body,s=0,t=0,nav=document.querySelector("nav.puntos");
+  var $=function(id){return document.getElementById(id)};
+  escenas.forEach(function(e,i){
+    var bt=document.createElement("button");bt.type="button";bt.textContent=(i+1)+". "+e.t;
+    bt.addEventListener("click",function(ev){ev.stopPropagation();ir(i,0);});
+    nav.appendChild(bt);
+  });
+  function pintar(){
+    b.setAttribute("data-s",s);b.setAttribute("data-t",t);
+    var e=escenas[s];
+    $("num").textContent="Escena "+(s+1)+" de "+escenas.length;
+    $("tit").textContent=e.t;$("preg").textContent=e.p;$("cuerpo").textContent=e.c;$("fuente").textContent="Fuente: "+e.f;
+    $("paso").textContent=e.n>1?("Paso "+(t+1)+" de "+e.n):"";
+    $("ant").disabled=(s===0&&t===0);
+    $("sig").disabled=(s===escenas.length-1&&t===e.n-1);
+    nav.querySelectorAll("button").forEach(function(x,i){if(i===s)x.setAttribute("aria-current","step");else x.removeAttribute("aria-current");});
+    document.querySelectorAll("[data-at]").forEach(function(el){var p=el.getAttribute("data-at").split(":");el.classList.toggle("on",+p[0]===s&&t>=+p[1]);});
+    var act=fasesActivas[s];
+    document.querySelectorAll(".fs").forEach(function(f){
+      var on=act&&act.indexOf(f.getAttribute("data-f"))>=0;
+      f.classList.toggle("cur",!!on);f.classList.toggle("off",!!act&&!on);
+    });
+  }
+  function ir(ns,nt){s=Math.max(0,Math.min(escenas.length-1,ns));t=Math.max(0,Math.min(escenas[s].n-1,nt));pintar();}
+  function sig(){if(t<escenas[s].n-1){t++;pintar();}else if(s<escenas.length-1){ir(s+1,0);}}
+  function ant(){if(t>0){t--;pintar();}else if(s>0){ir(s-1,escenas[s-1].n-1);}}
+  $("sig").addEventListener("click",function(ev){ev.stopPropagation();sig();});
+  $("ant").addEventListener("click",function(ev){ev.stopPropagation();ant();});
+  $("marco").addEventListener("click",sig);
+  document.addEventListener("keydown",function(ev){
+    if(ev.key==="ArrowRight"||ev.key===" "||ev.key==="PageDown"||ev.key==="Enter"){if(ev.target.tagName==="BUTTON"&&ev.key!=="ArrowRight")return;ev.preventDefault();sig();}
+    else if(ev.key==="ArrowLeft"||ev.key==="PageUp"){ev.preventDefault();ant();}
+    else if(ev.key==="Home"){ir(0,0);}
+    else if(ev.key==="f"||ev.key==="F"){try{if(!document.fullscreenElement){document.documentElement.requestFullscreen().catch(function(){});}else{document.exitFullscreen();}}catch(e){}}
+  });
+  function escalar(){
+    var m=$("marco"),st=$("stage"),w=m.clientWidth,h=m.clientHeight;if(!w||!h)return;
+    var k=Math.min(w/1000,h/640)*0.96,x=(w-1000*k)/2,y=(h-640*k)/2;
+    st.style.transform="translate("+x+"px,"+y+"px) scale("+k+")";
+  }
+  window.addEventListener("resize",escalar);
+  if(window.ResizeObserver){new ResizeObserver(escalar).observe($("marco"));}
+  pintar();escalar();
+})();
+</script>
+</body>
+</html>

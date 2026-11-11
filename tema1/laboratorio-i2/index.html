@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laboratorio de forest plot e I²</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Plan: granate UCLM para los estudios y los controles; ámbar para el rombo combinado (como en la figura de los apuntes);
+     verde, ámbar y rojo solo en la escala de I². Layout: controles a la izquierda, forest plot y lectura a la derecha. */
+  --granate:#A3002F; --granate-claro:#F7E4E9; --verde:#25695C; --verde-claro:#E1EFEB;
+  --ambar:#B4621B; --ambar-claro:#F6EADF; --rojo:#9C1C1C;
+  --tinta:#2A2125; --gris:#6C6266; --linea:#DED6D9; --papel:#FFFFFF; --fondo:#F6F3F4;
+  --f-disp:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;
+  --f-cuerpo:"IBM Plex Sans",Arial,Helvetica,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--fondo);color:var(--tinta);font-family:var(--f-cuerpo);line-height:1.5}
+header{display:flex;align-items:center;gap:20px;padding:12px 24px;background:var(--papel);border-bottom:1px solid var(--linea);flex-wrap:wrap}
+.volver{font:600 13px var(--f-cuerpo);color:var(--granate);text-decoration:none;border:1px solid var(--granate);border-radius:999px;padding:4px 11px}
+.volver:hover{background:var(--granate);color:#fff}
+.marca{font-family:var(--f-disp);font-weight:700;color:var(--granate);font-size:15px;letter-spacing:.02em}
+.marca span{color:var(--gris);font-weight:500}
+main{display:grid;grid-template-columns:minmax(300px,380px) 1fr;min-height:calc(100vh - 54px)}
+aside{padding:24px 24px 30px;background:var(--papel);border-right:1px solid var(--linea)}
+.num{font-family:var(--f-disp);font-weight:600;color:var(--granate);font-size:15px;letter-spacing:.06em;text-transform:uppercase}
+h1{font:700 36px/1.04 var(--f-disp);margin:4px 0 10px}
+.intro{font-size:15px;margin:0 0 16px;color:#43393D}
+.lbl{font:600 12px var(--f-cuerpo);letter-spacing:.08em;text-transform:uppercase;color:var(--gris);margin:18px 0 8px}
+.esc{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.esc button,.seg button,.mini{font:600 14px var(--f-cuerpo);border:1px solid var(--granate);background:var(--papel);color:var(--granate);border-radius:6px;padding:7px 0;cursor:pointer}
+.esc button[aria-pressed="true"],.seg button[aria-pressed="true"]{background:var(--granate);color:#fff}
+.esc button:focus-visible,.seg button:focus-visible,.mini:focus-visible,input:focus-visible{outline:3px solid var(--ambar);outline-offset:2px}
+.lectura{margin-top:10px;font-size:14px;line-height:1.45;padding:10px 12px;background:var(--fondo);border-radius:8px;min-height:62px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.est{border:1px solid var(--linea);border-radius:8px;padding:9px 11px;margin-bottom:8px}
+.est .cab{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px}
+.est .cab b{font:700 16px var(--f-disp);color:var(--granate)}
+.est .cab span{font-variant-numeric:tabular-nums;color:var(--gris)}
+.fila{display:grid;grid-template-columns:58px 1fr 66px;gap:8px;align-items:center;font-size:12.5px;color:var(--gris);margin-top:4px}
+.fila output{font-variant-numeric:tabular-nums;color:var(--tinta);text-align:right;font-weight:600}
+input[type=range]{width:100%;accent-color:var(--granate)}
+.mas{display:flex;gap:6px}
+.mini{padding:5px 12px;font-size:13px}
+.mini:disabled{opacity:.35;cursor:default}
+
+section.der{padding:24px 28px 40px;min-width:0}
+.panel{background:var(--papel);border:1px solid var(--linea);border-radius:12px;padding:16px 18px 10px}
+.panel h2{font:700 20px var(--f-disp);margin:0 0 2px}
+.panel .sub{font-size:13px;color:var(--gris);margin:0 0 6px}
+svg text{font-family:var(--f-cuerpo)}
+.cifras{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+.cifra{background:var(--papel);border:1px solid var(--linea);border-radius:10px;padding:12px 14px}
+.cifra .t{font:600 11.5px var(--f-cuerpo);letter-spacing:.08em;text-transform:uppercase;color:var(--gris)}
+.cifra .v{font:700 30px/1.1 var(--f-disp);font-variant-numeric:tabular-nums}
+.cifra .n{font-size:12.5px;color:var(--gris)}
+.cifra.i2 .v{color:var(--granate)}
+.escala{margin-top:14px;background:var(--papel);border:1px solid var(--linea);border-radius:10px;padding:14px 16px}
+.escala .barra{position:relative;height:56px;margin-top:22px}
+.banda{position:absolute;height:10px;border-radius:3px;font-size:11.5px}
+.banda span{position:absolute;top:12px;left:0;white-space:nowrap;color:var(--gris)}
+.aguja{position:absolute;top:-6px;width:3px;height:30px;background:var(--tinta);border-radius:2px;transition:left .4s cubic-bezier(.3,.7,.2,1)}
+.aguja b{position:absolute;top:-20px;left:50%;transform:translateX(-50%);font:700 13px var(--f-disp);white-space:nowrap}
+.formula{font-size:13.5px;color:#43393D;margin-top:22px}
+.avisos{margin-top:14px;display:grid;gap:8px}
+.aviso{background:var(--papel);border-left:4px solid var(--granate);border-radius:0 8px 8px 0;padding:10px 14px;font-size:14.5px;line-height:1.45}
+.aviso.ambar{border-left-color:var(--ambar)}
+.aviso.verde{border-left-color:var(--verde)}
+.aviso b{font-family:var(--f-disp);font-size:15.5px}
+footer{grid-column:1/-1;border-top:1px solid var(--linea);background:var(--papel);padding:14px 24px;font-size:12.5px;color:var(--gris)}
+@media (max-width:900px){main{grid-template-columns:1fr}aside{border-right:0;border-bottom:1px solid var(--linea)}.cifras{grid-template-columns:repeat(2,1fr)}section.der{padding:18px 14px}}
+</style>
+</head>
+<body>
+<header>
+  <a class="volver" href="../../index.html">← Colección</a>
+  <div class="marca">Tema 1 · Bloque 1: Evidencias <span>· Laboratorio de forest plot e I²</span></div>
+</header>
+<main>
+  <aside>
+    <div class="num">Laboratorio</div>
+    <h1>¿Cuentan los estudios la misma historia?</h1>
+    <p class="intro">Cuatro estudios ficticios miden el riesgo relativo (RR) de reingreso con una tecnología frente a su comparador. Un RR menor que 1 favorece a la tecnología. Cargad un escenario de los apuntes o moved cada estudio y mirad qué pasa con el rombo y con la I².</p>
+
+    <div class="lbl">Escenarios de los apuntes</div>
+    <div class="esc" id="esc"></div>
+    <div class="lectura" id="lectura"></div>
+
+    <div class="lbl">Modelo</div>
+    <div class="seg" id="modelo">
+      <button type="button" data-m="ale" aria-pressed="true">Efectos aleatorios</button>
+      <button type="button" data-m="fij" aria-pressed="false">Efectos fijos</button>
+    </div>
+
+    <div class="lbl">Los estudios</div>
+    <div id="estudios"></div>
+    <div class="mas"><button type="button" class="mini" id="menos">− Quitar estudio</button><button type="button" class="mini" id="mas">+ Añadir estudio</button></div>
+  </aside>
+
+  <section class="der">
+    <div class="panel">
+      <h2>Forest plot</h2>
+      <p class="sub">Cuadrado: estimación de cada estudio, de tamaño proporcional a su peso. Línea: intervalo de confianza del 95 %. Rombo: estimación combinada.</p>
+      <svg id="forest" viewBox="0 0 900 360" width="100%" role="img" aria-label="Forest plot de los estudios y la estimación combinada"></svg>
+    </div>
+
+    <div class="cifras">
+      <div class="cifra"><div class="t">Q de Cochran</div><div class="v" id="q"></div><div class="n">distancia ponderada al efecto común</div></div>
+      <div class="cifra"><div class="t">gl</div><div class="v" id="gl"></div><div class="n">lo que valdría Q si todo fuera azar</div></div>
+      <div class="cifra i2"><div class="t">I²</div><div class="v" id="i2"></div><div class="n">variabilidad que no explica el azar</div></div>
+      <div class="cifra"><div class="t">RR combinado</div><div class="v" id="rr"></div><div class="n" id="ic"></div></div>
+    </div>
+
+    <div class="escala">
+      <div class="t" style="font:600 11.5px var(--f-cuerpo);letter-spacing:.08em;text-transform:uppercase;color:var(--gris)">Orientación del Cochrane Handbook (los tramos se solapan a propósito)</div>
+      <div class="barra" id="barra">
+        <div class="banda" style="left:0;width:40%;top:14px;background:#CFE3DD"><span>0–40 %: puede no ser importante</span></div>
+        <div class="banda" style="left:30%;width:30%;top:30px;background:#EBD7B5"><span style="left:auto;right:0">30–60 %: moderada</span></div>
+        <div class="banda" style="left:50%;width:40%;top:14px;background:#E4B9A2;opacity:.85"><span style="left:auto;right:0;top:-18px">50–90 %: sustancial</span></div>
+        <div class="banda" style="left:75%;width:25%;top:30px;background:#D79A9A"><span style="left:auto;right:0">75–100 %: considerable</span></div>
+        <div class="aguja" id="aguja"></div>
+      </div>
+      <div class="formula">I² = (Q − gl) / Q × 100, y se toma como 0 % cuando Q es menor que gl.</div>
+    </div>
+
+    <div class="avisos" id="avisos"></div>
+  </section>
+
+  <footer>Datos ficticios, tomados de los cuatro escenarios del bloque de evidencias del Tema 1. Cálculo con el método del inverso de la varianza sobre el logaritmo del RR; el modelo de efectos aleatorios usa el estimador de DerSimonian y Laird, como la figura de los apuntes. Con los escenarios cargados se reproducen sus cifras: Q de 0,31, 5,72, 22,92 y 35,88. Orientación sobre I²: Cochrane Handbook for Systematic Reviews of Interventions; Higgins, Thompson, Deeks y Altman, «Measuring inconsistency in meta-analyses», BMJ, 2003.</footer>
+</main>
+
+<script>
+(function(){
+"use strict";
+var SEmax=0.45, SEmin=0.03, LN=Math.log(SEmax/SEmin);
+function seDeV(v){return SEmax*Math.exp(-v/100*LN);}
+function vDeSe(se){return 100*Math.log(SEmax/se)/LN;}
+var ESC={
+  A:{rr:[.82,.76,.80,.74],se:[.12,.15,.10,.18],txt:"Q es menor que gl: las diferencias caben de sobra en el azar. Los estudios cuentan la misma historia."},
+  B:{rr:[.95,.70,.85,.60],se:[.12,.15,.10,.18],txt:"Algo más de dispersión de la esperable por azar: heterogeneidad moderada."},
+  C:{rr:[1.05,.55,.90,.45],se:[.12,.15,.10,.18],txt:"Dos estudios no muestran efecto y dos muestran un efecto grande. Hay que buscar el porqué antes de combinar."},
+  D:{rr:[.95,.70,.85,.60],se:[.05,.06,.04,.07],txt:"Mismos puntos que B, pero estudios grandes: con intervalos tan estrechos, esa dispersión ya no puede atribuirse al azar."}
+};
+var st={y:[],se:[],modelo:"ale",esc:"B"};
+var $=function(id){return document.getElementById(id)};
+function fmt(x,d){return x.toFixed(d).replace(".",",");}
+
+function cargar(k){
+  st.esc=k;st.y=ESC[k].rr.map(Math.log);st.se=ESC[k].se.slice();
+  pintarControles();calcular();
+}
+var escW=$("esc");
+Object.keys(ESC).forEach(function(k){
+  var b=document.createElement("button");b.type="button";b.textContent=k;b.dataset.k=k;
+  b.addEventListener("click",function(){cargar(k);});escW.appendChild(b);
+});
+document.querySelectorAll("#modelo button").forEach(function(b){
+  b.addEventListener("click",function(){st.modelo=b.dataset.m;document.querySelectorAll("#modelo button").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false");});calcular();});
+});
+$("mas").addEventListener("click",function(){if(st.y.length<8){st.y.push(Math.log(.8));st.se.push(.15);st.esc=null;pintarControles();calcular();}});
+$("menos").addEventListener("click",function(){if(st.y.length>2){st.y.pop();st.se.pop();st.esc=null;pintarControles();calcular();}});
+
+function pintarControles(){
+  escW.querySelectorAll("button").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.k===st.esc?"true":"false");});
+  $("lectura").textContent=st.esc?("Escenario "+st.esc+". "+ESC[st.esc].txt):"Datos modificados. Volved a un escenario para recuperar los de los apuntes.";
+  var w=$("estudios");w.innerHTML="";
+  st.y.forEach(function(y,i){
+    var d=document.createElement("div");d.className="est";
+    d.innerHTML='<div class="cab"><b>E'+(i+1)+'</b><span id="ic'+i+'"></span></div>'+
+      '<div class="fila"><span>RR</span><input type="range" min="'+Math.log(.3)+'" max="'+Math.log(1.6)+'" step="0.005" value="'+y+'" aria-label="Riesgo relativo del estudio E'+(i+1)+'"><output></output></div>'+
+      '<div class="fila"><span>Tamaño</span><input type="range" min="0" max="100" step="0.5" value="'+vDeSe(st.se[i])+'" aria-label="Tamaño del estudio E'+(i+1)+'"><output></output></div>';
+    var r=d.querySelectorAll("input");
+    r[0].addEventListener("input",function(){st.y[i]=+r[0].value;st.esc=null;sinEsc();calcular();});
+    r[1].addEventListener("input",function(){st.se[i]=seDeV(+r[1].value);st.esc=null;sinEsc();calcular();});
+    w.appendChild(d);
+  });
+  $("mas").disabled=st.y.length>=8;$("menos").disabled=st.y.length<=2;
+}
+function sinEsc(){escW.querySelectorAll("button").forEach(function(b){b.setAttribute("aria-pressed","false");});$("lectura").textContent="Datos modificados. Volved a un escenario para recuperar los de los apuntes.";}
+
+function metan(){
+  var k=st.y.length,w=st.se.map(function(s){return 1/(s*s);});
+  var sw=w.reduce(function(a,b){return a+b;},0);
+  var mf=w.reduce(function(a,x,i){return a+x*st.y[i];},0)/sw;
+  var Q=w.reduce(function(a,x,i){return a+x*Math.pow(st.y[i]-mf,2);},0);
+  var gl=k-1,C=sw-w.reduce(function(a,x){return a+x*x;},0)/sw;
+  var t2=Math.max(0,(Q-gl)/C);
+  var wu=st.modelo==="ale"?st.se.map(function(s){return 1/(s*s+t2);}):w;
+  var su=wu.reduce(function(a,b){return a+b;},0);
+  var m=wu.reduce(function(a,x,i){return a+x*st.y[i];},0)/su,se=1/Math.sqrt(su);
+  var I2=Q>gl?(Q-gl)/Q*100:0;
+  return {k:k,Q:Q,gl:gl,I2:I2,m:m,lo:m-1.96*se,hi:m+1.96*se,pesos:wu.map(function(x){return x/su*100;})};
+}
+
+var XMIN=Math.log(.25),XMAX=Math.log(2.2);
+function X(v,x0,x1){return x0+(Math.max(XMIN,Math.min(XMAX,v))-XMIN)/(XMAX-XMIN)*(x1-x0);}
+function calcular(){
+  var r=metan(),svg=$("forest");
+  // controles: textos
+  st.y.forEach(function(y,i){
+    var lo=Math.exp(y-1.96*st.se[i]),hi=Math.exp(y+1.96*st.se[i]);
+    var c=$("ic"+i);if(c)c.textContent="IC 95 %: "+fmt(lo,2)+" a "+fmt(hi,2);
+    var outs=$("estudios").children[i].querySelectorAll("output");
+    outs[0].textContent=fmt(Math.exp(y),2);outs[1].textContent="peso "+fmt(r.pesos[i],0)+" %";
+  });
+  var filas=r.k+1,top=34,step=34,h=top+filas*step+60;
+  svg.setAttribute("viewBox","0 0 900 "+h);
+  var x0=150,x1=650,s="";
+  s+='<text x="20" y="20" font-size="13" font-weight="600" fill="#6C6266">Estudio</text>';
+  s+='<text x="700" y="20" font-size="13" font-weight="600" fill="#6C6266">RR [IC 95 %]</text>';
+  s+='<text x="855" y="20" font-size="13" font-weight="600" fill="#6C6266" text-anchor="end">Peso</text>';
+  var x1v=X(0,x0,x1);
+  s+='<line x1="'+x1v+'" y1="26" x2="'+x1v+'" y2="'+(top+filas*step)+'" stroke="#6C6266" stroke-width="1.2"/>';
+  var pmax=Math.max.apply(null,r.pesos);
+  st.y.forEach(function(y,i){
+    var cy=top+i*step+12,lo=y-1.96*st.se[i],hi=y+1.96*st.se[i];
+    var lado=6+14*Math.sqrt(r.pesos[i]/pmax);
+    s+='<text x="20" y="'+(cy+5)+'" font-size="14" fill="#2A2125">E'+(i+1)+'</text>';
+    s+='<line x1="'+X(lo,x0,x1)+'" y1="'+cy+'" x2="'+X(hi,x0,x1)+'" y2="'+cy+'" stroke="#2A2125" stroke-width="2"/>';
+    if(lo<XMIN)s+='<path d="M'+(x0)+' '+cy+' l8 -5 v10 z" fill="#2A2125"/>';
+    if(hi>XMAX)s+='<path d="M'+(x1)+' '+cy+' l-8 -5 v10 z" fill="#2A2125"/>';
+    s+='<rect x="'+(X(y,x0,x1)-lado/2)+'" y="'+(cy-lado/2)+'" width="'+lado+'" height="'+lado+'" fill="#A3002F"/>';
+    s+='<text x="700" y="'+(cy+5)+'" font-size="14" fill="#2A2125">'+fmt(Math.exp(y),2)+' ['+fmt(Math.exp(lo),2)+'; '+fmt(Math.exp(hi),2)+']</text>';
+    s+='<text x="855" y="'+(cy+5)+'" font-size="14" fill="#2A2125" text-anchor="end">'+fmt(r.pesos[i],1)+' %</text>';
+  });
+  var cy=top+r.k*step+14;
+  s+='<line x1="20" y1="'+(cy-18)+'" x2="860" y2="'+(cy-18)+'" stroke="#DED6D9"/>';
+  s+='<text x="20" y="'+(cy+5)+'" font-size="14" font-weight="700" fill="#2A2125">Combinado</text>';
+  s+='<path d="M'+X(r.lo,x0,x1)+' '+cy+' L'+X(r.m,x0,x1)+' '+(cy-9)+' L'+X(r.hi,x0,x1)+' '+cy+' L'+X(r.m,x0,x1)+' '+(cy+9)+' Z" fill="#B4621B"/>';
+  s+='<text x="700" y="'+(cy+5)+'" font-size="14" font-weight="700" fill="#2A2125">'+fmt(Math.exp(r.m),2)+' ['+fmt(Math.exp(r.lo),2)+'; '+fmt(Math.exp(r.hi),2)+']</text>';
+  s+='<text x="855" y="'+(cy+5)+'" font-size="14" font-weight="700" fill="#2A2125" text-anchor="end">100 %</text>';
+  var ay=top+filas*step+8;
+  s+='<line x1="'+x0+'" y1="'+ay+'" x2="'+x1+'" y2="'+ay+'" stroke="#2A2125"/>';
+  [0.25,0.5,0.75,1,1.5,2].forEach(function(t){var tx=X(Math.log(t),x0,x1);s+='<line x1="'+tx+'" y1="'+ay+'" x2="'+tx+'" y2="'+(ay+5)+'" stroke="#2A2125"/><text x="'+tx+'" y="'+(ay+20)+'" font-size="12.5" text-anchor="middle" fill="#2A2125">'+fmt(t,2).replace(",00","")+'</text>';});
+  s+='<text x="'+(x1v-8)+'" y="'+(ay+42)+'" font-size="12.5" text-anchor="end" fill="#A3002F">← favorece a la tecnología</text>';
+  s+='<text x="'+(x1v+8)+'" y="'+(ay+42)+'" font-size="12.5" fill="#6C6266">favorece al comparador →</text>';
+  svg.innerHTML=s;
+
+  $("q").textContent=fmt(r.Q,2);$("gl").textContent=r.gl;$("i2").textContent=fmt(r.I2,0)+" %";
+  $("rr").textContent=fmt(Math.exp(r.m),2);$("ic").textContent="IC 95 %: "+fmt(Math.exp(r.lo),2)+" a "+fmt(Math.exp(r.hi),2);
+  $("aguja").style.left="calc("+r.I2+"% - 1px)";
+  avisos(r);
+}
+
+function avisos(r){
+  var a=[];
+  var cruza=r.lo<0&&r.hi>0;
+  if(cruza)a.push(["ambar","El intervalo combinado incluye el 1.","Con estos datos no puede descartarse que la tecnología no tenga efecto."]);
+  else a.push(["verde","El intervalo combinado no incluye el 1.","El efecto es estadísticamente significativo. Falta preguntarse si su tamaño es clínicamente relevante."]);
+  var algunoSig=st.y.some(function(y,i){return y+1.96*st.se[i]<0;});
+  if(cruza&&algunoSig)a.push(["","Algún estudio sí es significativo y el conjunto no.","Un estudio aislado puede excluir el 1 aunque el combinado no lo haga. La conclusión se apoya en el conjunto, no en el estudio más llamativo."]);
+  if(r.I2===0&&r.k<=4)a.push(["ambar","I² = 0 % con "+r.k+" estudios.","Con tan pocos estudios, una I² nula no demuestra que no haya heterogeneidad: puede que simplemente no haya información para detectarla."]);
+  if(r.I2>=50)a.push(["","Heterogeneidad importante.","Antes de combinar, buscad el porqué: población, protocolo o riesgo de sesgo distintos. El rombo puede estar promediando estudios que no se parecen."]);
+  var dif=Math.max.apply(null,st.y)-Math.min.apply(null,st.y);
+  if(r.I2>=50&&dif<Math.log(1.12))a.push(["ambar","I² alta con resultados muy parecidos.","Con estudios muy precisos, diferencias pequeñas producen I² altas. Mirad también si la diferencia entre estudios importa clínicamente."]);
+  if(st.modelo==="fij"&&r.I2>0)a.push(["","Modelo de efectos fijos.","Supone que todos los estudios estiman el mismo efecto. Con heterogeneidad, el de efectos aleatorios es la opción por defecto más prudente en ETS: da más peso relativo a los estudios pequeños y un intervalo más ancho."]);
+  if(st.esc==="B")a.push(["verde","Prueba ahora el escenario D.","Tiene los mismos RR que B; solo cambia el tamaño de los estudios."]);
+  $("avisos").innerHTML=a.map(function(x){return '<div class="aviso '+x[0]+'"><b>'+x[1]+'</b> '+x[2]+'</div>';}).join("");
+}
+cargar("B");
+})();
+</script>
+</body>
+</html>
