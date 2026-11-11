@@ -11,6 +11,7 @@ El caso guía es el informe de AQuAS y RedETS sobre protonterapia (2024).
 | 1 | La ETS de un vistazo | `tema1/ets-de-un-vistazo/` |
 | 1 · Bloque 1: Evidencias | La revisión sistemática paso a paso | `tema1/revision-sistematica/` |
 | 1 · Bloque 1: Evidencias | Laboratorio de forest plot e I² | `tema1/laboratorio-i2/` |
+| 1 · Bloque 1: Evidencias | La escalera GRADE y el riesgo de sesgo | `tema1/escalera-grade/` |
 
 La página de inicio (`index.html`) enlaza todos los recursos. Enlaza también dos herramientas que viven en sus propios repositorios: el [Buscador de evidencia PICO](https://github.com/csmelendez/buscaPICO) y el [Clasificador de productos sanitarios MDR/IVDR](https://github.com/csmelendez/clasificaMD).
 
