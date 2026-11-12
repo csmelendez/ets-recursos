@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El mapa de impacto: proceso clínico, organización, calidad de vida, equidad y ética</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Granate UCLM para la estructura; ámbar para el bloque de impacto y decisión del Tema 1;
+     verde para lo correcto y rojo para lo que hay que revisar en los ejercicios. */
+  --granate:#A3002F; --granate-claro:#F7E4E9;
+  --verde:#25695C; --verde-claro:#E1EFEB;
+  --ambar:#B4621B; --ambar-claro:#F6EADF;
+  --rojo:#B3261E; --rojo-claro:#F8E1DF;
+  --pizarra:#35577A; --pizarra-claro:#E3EAF2;
+  --tinta:#2A2125; --gris:#6C6266; --linea:#DED6D9; --papel:#FFFFFF; --fondo:#F6F3F4;
+  --f-disp:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;
+  --f-cuerpo:"IBM Plex Sans",Arial,Helvetica,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--fondo);color:var(--tinta);font-family:var(--f-cuerpo);display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:20px;padding:12px 24px;background:var(--papel);border-bottom:1px solid var(--linea);flex-wrap:wrap}
+.volver{font:600 13px var(--f-cuerpo);color:var(--granate);text-decoration:none;border:1px solid var(--granate);border-radius:999px;padding:4px 11px}
+.volver:hover{background:var(--granate);color:#fff}
+.marca{font-family:var(--f-disp);font-weight:700;color:var(--granate);font-size:15px;letter-spacing:.02em}
+.marca span{color:var(--gris);font-weight:500}
+nav.puntos{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+nav.puntos button{font:500 13px var(--f-cuerpo);border:1px solid var(--linea);background:var(--papel);color:var(--gris);border-radius:999px;padding:5px 11px;cursor:pointer}
+nav.puntos button[aria-current="step"]{background:var(--granate);border-color:var(--granate);color:#fff}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--ambar);outline-offset:2px}
+main{flex:1;display:grid;grid-template-columns:minmax(280px,360px) 1fr;min-height:0}
+aside{padding:28px 26px 20px;display:flex;flex-direction:column;gap:12px;background:var(--papel);border-right:1px solid var(--linea);overflow:auto}
+.num{font-family:var(--f-disp);font-weight:600;color:var(--granate);font-size:15px;letter-spacing:.06em;text-transform:uppercase}
+aside h1{font-family:var(--f-disp);font-weight:700;font-size:38px;line-height:1.02;margin:0;text-wrap:balance}
+.pregunta{font-size:19px;font-style:italic;color:var(--granate);margin:0}
+.cuerpo{font-size:16px;line-height:1.55;margin:0;max-width:62ch}
+.fuente{font-size:12.5px;color:var(--gris);margin-top:auto;border-top:1px solid var(--linea);padding-top:10px;line-height:1.45}
+.ctl{display:flex;gap:8px;align-items:center}
+.ctl button{font:600 14px var(--f-cuerpo);border:1px solid var(--granate);background:var(--papel);color:var(--granate);border-radius:6px;padding:8px 14px;cursor:pointer}
+.ctl button.prim{background:var(--granate);color:#fff}
+.ctl button:disabled{opacity:.35;cursor:default}
+.ctl .paso{font-size:12.5px;color:var(--gris);margin-left:6px;font-variant-numeric:tabular-nums}
+.marco{position:relative;min-height:0;overflow:hidden;cursor:pointer}
+.stage{position:absolute;left:0;top:0;width:1000px;height:640px;transform-origin:0 0}
+.esc{position:absolute;left:0;top:0;width:1000px;height:640px;opacity:0;pointer-events:none;transition:opacity 500ms ease}
+.int{cursor:auto}
+.fade{opacity:0;transition:opacity 600ms ease,transform 600ms ease;transform:translateY(8px)}
+.fade.on{opacity:1;transform:none}
+.card{background:var(--papel);border:1px solid var(--linea);border-radius:10px;box-shadow:0 6px 20px rgba(60,20,30,.08);padding:16px 18px}
+.tipo{font:600 12px var(--f-cuerpo);letter-spacing:.08em;text-transform:uppercase;color:var(--gris)}
+.banda{position:absolute;left:30px;width:940px;padding:13px 18px;border-left:4px solid var(--granate);background:var(--papel);border-radius:0 8px 8px 0;font-size:15.5px;line-height:1.45}
+.banda.amb{border-left-color:var(--ambar)}
+.lbl{font:600 12px var(--f-cuerpo);letter-spacing:.08em;text-transform:uppercase;color:var(--gris);margin:0 0 6px}
+/* Pestañas de caso y botones de los ejercicios */
+.casos{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.casos .lbl{margin:0 6px 0 0}
+.casos button{font:600 13px var(--f-cuerpo);border:1px solid var(--ambar);background:var(--papel);color:var(--ambar);border-radius:999px;padding:4px 12px;cursor:pointer}
+.casos button[aria-pressed="true"]{background:var(--ambar);color:#fff}
+.bt{font:600 12.5px var(--f-cuerpo);border:1px solid var(--linea);background:var(--papel);color:var(--tinta);border-radius:999px;padding:4px 10px;cursor:pointer;white-space:nowrap}
+.bt:hover{border-color:var(--granate)}
+.bt[aria-pressed="true"]{background:var(--granate);border-color:var(--granate);color:#fff}
+.bt.ok{background:var(--verde);border-color:var(--verde);color:#fff}
+.bt.esp{box-shadow:inset 0 0 0 2px var(--verde);color:var(--verde)}
+.bt.mal{background:var(--rojo);border-color:var(--rojo);color:#fff}
+.acc{font:600 14px var(--f-cuerpo);border:1px solid var(--granate);background:var(--granate);color:#fff;border-radius:6px;padding:7px 14px;cursor:pointer}
+.acc.sec{background:var(--papel);color:var(--granate)}
+.acc:disabled{opacity:.4;cursor:default}
+.fb{border-radius:8px;padding:10px 14px;font-size:14.5px;line-height:1.45;background:var(--fondo);border-left:4px solid var(--gris)}
+.fb.ok{background:var(--verde-claro);border-left-color:var(--verde)}
+.fb.mal{background:var(--rojo-claro);border-left-color:var(--rojo)}
+.fb.neu{background:var(--ambar-claro);border-left-color:var(--ambar)}
+.fb b{font-weight:600}
+.marcador{font:600 13.5px var(--f-cuerpo);color:var(--gris)}
+.marcador b{color:var(--tinta)}
+
+/* Escena 1: dominios del HTA Core Model */
+.dom{position:absolute;width:296px;height:96px;border-radius:10px;background:var(--papel);border:1px solid var(--linea);padding:12px 14px;transition:background 600ms,border-color 600ms,opacity 600ms}
+.dom .n{font:600 12px var(--f-cuerpo);letter-spacing:.07em;text-transform:uppercase;color:var(--gris)}
+.dom b{display:block;font:700 20px/1.1 var(--f-disp);margin-top:4px}
+.dom small{display:block;font-size:12.5px;color:var(--gris);margin-top:3px}
+[data-s="0"][data-t="1"] .dom.cl{background:var(--fondo);opacity:.55}
+[data-s="0"][data-t="1"] .dom.nac{background:var(--ambar-claro);border-color:var(--ambar)}
+.etqdom{position:absolute;font:700 14px var(--f-disp);letter-spacing:.06em;text-transform:uppercase}
+/* Escena 2: cinco filas */
+.fila5{position:absolute;left:30px;width:940px;display:grid;grid-template-columns:200px 1fr 1fr;gap:14px;align-items:start;padding:11px 0;border-top:1px solid var(--linea)}
+.fila5 h3{margin:0;font:700 21px/1.1 var(--f-disp);color:var(--ambar)}
+.fila5 p{margin:0;font-size:14.5px;line-height:1.4}
+/* Escena 3: cuatro columnas */
+.col4{position:absolute;top:24px;width:224px;height:150px;border-radius:10px;background:var(--papel);border:1px solid var(--linea);border-top:5px solid var(--ambar);padding:12px 14px}
+.col4 b{display:block;font:700 21px/1.1 var(--f-disp);margin-bottom:6px}
+.col4 span{font-size:14px;line-height:1.4}
+.ejfila{position:absolute;left:30px;width:940px;display:grid;grid-template-columns:130px repeat(4,1fr);gap:0;border-radius:10px;overflow:hidden;border:1px solid var(--linea);background:var(--papel)}
+.ejfila div{padding:10px 12px;font-size:13.5px;line-height:1.35;border-left:1px solid var(--linea)}
+.ejfila div:first-child{border-left:0;font:700 15px/1.2 var(--f-disp);background:var(--fondo)}
+.ejfila.buena div:first-child{color:var(--verde)} .ejfila.mala div:first-child{color:var(--rojo)}
+.ejfila.mala{border-color:var(--rojo)} .ejfila.buena{border-color:var(--verde)}
+/* Escenas 4 y 5: clasificación */
+.ejer{position:absolute;left:24px;top:14px;width:952px;height:612px;display:flex;flex-direction:column;gap:8px}
+.cabej{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.ctx{font-size:13.5px;line-height:1.4;color:#43393D;background:var(--papel);border:1px solid var(--linea);border-radius:8px;padding:7px 12px}
+.frag{display:grid;grid-template-columns:24px 1fr auto;gap:10px;align-items:center;background:var(--papel);border:1px solid var(--linea);border-radius:8px;padding:6px 10px;transition:border-color 300ms,background 300ms}
+.frag .i{font:700 15px var(--f-disp);color:var(--gris)}
+.frag p{margin:0;font-size:13.4px;line-height:1.33}
+.frag .ops{display:flex;gap:4px}
+.frag.ok{border-color:var(--verde);background:#F6FBF9}
+.frag.mal{border-color:var(--rojo);background:#FDF5F4}
+.frag.sel{box-shadow:0 0 0 2px var(--ambar)}
+.frag.revisado{cursor:pointer}
+.pie{display:flex;gap:10px;align-items:center;margin-top:auto}
+.pie .fb{flex:1;min-height:58px;font-size:13.8px;padding:8px 12px}
+/* Escena 6: mapa de la Oficina */
+table.mapa{border-collapse:separate;border-spacing:0;width:100%;background:var(--papel);border:1px solid var(--linea);border-radius:10px;overflow:hidden}
+table.mapa th{font:600 11.5px var(--f-cuerpo);letter-spacing:.07em;text-transform:uppercase;color:var(--gris);text-align:left;padding:8px 10px;background:var(--fondo);border-bottom:1px solid var(--linea)}
+table.mapa td{font-size:13.3px;line-height:1.35;padding:9px 10px;border-top:1px solid var(--linea);vertical-align:top}
+table.mapa td:first-child{font:700 15px/1.15 var(--f-disp);color:var(--ambar);width:128px}
+table.mapa tr:nth-child(2) td{border-top:0}
+td.sd{color:var(--rojo)}
+/* Escena 7: dato económico */
+.eco{font-size:15px;line-height:1.5;background:var(--ambar-claro);border-left:4px solid var(--ambar);border-radius:0 8px 8px 0;padding:10px 14px}
+.opc{display:block;width:100%;text-align:left;font:400 14.5px/1.42 var(--f-cuerpo);color:var(--tinta);background:var(--papel);border:1px solid var(--linea);border-radius:8px;padding:10px 14px;cursor:pointer}
+.opc:hover{border-color:var(--granate)}
+.opc.ok{border:2px solid var(--verde);background:#F6FBF9}
+.opc.mal{border:2px solid var(--rojo);background:#FDF5F4}
+/* Escena 8: cierre */
+.lista{position:absolute;left:30px;top:24px;width:560px;display:flex;flex-direction:column;gap:8px}
+.lista div{background:var(--papel);border:1px solid var(--linea);border-radius:8px;padding:9px 12px 9px 40px;position:relative;font-size:14.5px;line-height:1.4}
+.lista div::before{content:"";position:absolute;left:13px;top:12px;width:15px;height:15px;border:2px solid var(--ambar);border-radius:4px}
+.errores{position:absolute;left:615px;top:24px;width:355px;padding:16px 18px;border-radius:10px;background:var(--rojo-claro);border-left:4px solid var(--rojo);font-size:14.5px;line-height:1.45}
+.errores h3{margin:0 0 6px;font:700 20px var(--f-disp);color:var(--rojo)}
+.errores ul{margin:0;padding-left:18px}
+.errores li{margin-bottom:5px}
+
+[data-s="0"] #e0,[data-s="1"] #e1,[data-s="2"] #e2,[data-s="3"] #e3,[data-s="4"] #e4,[data-s="5"] #e5,[data-s="6"] #e6,[data-s="7"] #e7{opacity:1;pointer-events:auto}
+@media (max-width:900px){
+  main{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  aside{border-right:0;border-bottom:1px solid var(--linea);padding:18px 16px}
+  aside h1{font-size:30px}
+  .marco{min-height:66vw}
+  header{padding:10px 16px}
+}
+@media (prefers-reduced-motion:reduce){*{transition-duration:1ms !important}}
+</style>
+</head>
+<body data-s="0" data-t="0">
+<header>
+  <a class="volver" href="../../index.html">← Colección</a>
+  <div class="marca">Tema 1 · Impacto y decisión <span>· Mapa de impacto y dato económico (bloques 9 y 10 de la ficha)</span></div>
+  <nav class="puntos" aria-label="Escenas"></nav>
+</header>
+<main>
+  <aside aria-live="polite">
+    <div class="num" id="num">Escena 1</div>
+    <h1 id="tit"></h1>
+    <p class="pregunta" id="preg"></p>
+    <p class="cuerpo" id="cuerpo"></p>
+    <div class="ctl">
+      <button type="button" id="ant">← Anterior</button>
+      <button type="button" id="sig" class="prim">Siguiente →</button>
+      <span class="paso" id="paso"></span>
+    </div>
+    <div class="fuente" id="fuente"></div>
+  </aside>
+  <div class="marco" id="marco" role="region" aria-label="Mapa de impacto de una tecnología sanitaria, con ejercicios sobre casos ficticios">
+    <div class="stage" id="stage">
+
+<!-- 1. Dominios -->
+<div class="esc" id="e0">
+  <div class="dom cl" style="left:30px;top:24px"><span class="n">Dominio 1</span><b>Problema de salud y uso actual</b></div>
+  <div class="dom cl" style="left:352px;top:24px"><span class="n">Dominio 2</span><b>Descripción y características técnicas</b></div>
+  <div class="dom cl" style="left:674px;top:24px"><span class="n">Dominio 3</span><b>Seguridad</b></div>
+  <div class="dom cl" style="left:30px;top:132px"><span class="n">Dominio 4</span><b>Efectividad clínica</b></div>
+  <div class="dom" style="left:352px;top:132px"><span class="n">Dominio 5</span><b>Costes y evaluación económica</b><small>Tema 3</small></div>
+  <div class="dom nac" style="left:674px;top:132px"><span class="n">Dominio 6</span><b>Análisis ético</b></div>
+  <div class="dom nac" style="left:30px;top:240px"><span class="n">Dominio 7</span><b>Aspectos organizativos</b></div>
+  <div class="dom nac" style="left:352px;top:240px"><span class="n">Dominio 8</span><b>Aspectos sociales</b><small>Incluye equidad y experiencia del paciente</small></div>
+  <div class="dom nac" style="left:674px;top:240px"><span class="n">Dominio 9</span><b>Aspectos legales</b></div>
+  <div class="banda fade" data-at="0:1" style="top:366px">Los cuatro primeros dominios son clínicos. Para algunos medicamentos y productos sanitarios de alto riesgo se evalúan ya una sola vez para toda la Unión, en la evaluación clínica conjunta. El resto sigue siendo trabajo de cada país, y muchas veces de cada hospital, porque depende de dónde y cómo se va a usar la tecnología.</div>
+  <div class="banda amb fade" data-at="0:1" style="top:476px">En este bloque trabajamos los dominios 6 a 9, más lo que cambia en el proceso clínico. La economía (dominio 5) ya la visteis en el Tema 3: aquí solo se interpreta el dato.</div>
+</div>
+
+<!-- 2. Cinco filas -->
+<div class="esc" id="e1">
+  <div class="fila5" style="top:18px;border-top:0"><span class="lbl">Fila de la ficha</span><span class="lbl">Primera pregunta</span><span class="lbl">Segunda pregunta</span></div>
+  <div class="fila5" style="top:48px"><h3>Proceso clínico</h3><p>¿Sustituye a otra prueba o tratamiento, o se añade a lo que ya se hace?</p><p>¿Cambia el número o el orden de visitas, pruebas, ingresos o intervenciones?</p></div>
+  <div class="fila5" style="top:122px"><h3>Organización</h3><p>¿Quién hace el trabajo nuevo y con qué formación?</p><p>¿Qué espacio, equipos, mantenimiento e integración informática exige?</p></div>
+  <div class="fila5" style="top:196px"><h3>Calidad de vida y experiencia</h3><p>¿Qué nota el paciente: dolor, autonomía, ansiedad, desplazamientos?</p><p>¿Se ha preguntado a los pacientes, o solo se ha supuesto lo que quieren?</p></div>
+  <div class="fila5" style="top:270px"><h3>Equidad</h3><p>¿Llega a todos los que lo necesitan, o solo a una parte?</p><p>¿Quién queda fuera por edad, distancia, renta, idioma o competencia digital?</p></div>
+  <div class="fila5" style="top:344px"><h3>Ética y aspectos legales</h3><p>¿Qué información y qué consentimiento necesita el paciente?</p><p>¿Qué datos personales trata y quién responde si algo falla?</p></div>
+  <div class="banda amb fade" data-at="1:1" style="top:446px">Un efecto medio favorable puede repartirse mal: mucho beneficio para unos pocos y nada para quien vive lejos. La eficiencia y la equidad a veces chocan. El análisis de impacto no tiene que resolver ese choque. Tiene que hacerlo visible para que el Grupo de adopción lo discuta.</div>
+</div>
+
+<!-- 3. Cuatro columnas -->
+<div class="esc" id="e2">
+  <div class="col4" style="left:30px"><b>Qué cambia</b><span>El cambio concreto, con un verbo: «Farmacia deja de preparar…», «el paciente acude tres veces más…».</span></div>
+  <div class="col4" style="left:268px"><b>A quién afecta</b><span>Personas o servicios con nombre. «Todo el hospital» no sirve.</span></div>
+  <div class="col4" style="left:506px"><b>Dato</b><span>De dónde sale: el dossier, los estudios, el fabricante. Si no hay, se escribe «sin dato».</span></div>
+  <div class="col4" style="left:744px"><b>Incertidumbre</b><span>Lo que no se sabe y qué dato lo resolvería. Es la semilla de las condiciones del bloque 11.</span></div>
+  <div class="lbl" style="position:absolute;left:30px;top:196px">Ejemplo de práctica: armarios automatizados de dispensación (Hospital de Valdecierzo, ficticio)</div>
+  <div class="ejfila mala fade" data-at="2:1" style="top:222px"><div>Así no</div><div>Mejora la organización de la planta</div><div>Todo el hospital</div><div>Sí</div><div>Ninguna</div></div>
+  <div class="ejfila buena fade" data-at="2:2" style="top:302px"><div>Así sí</div><div>Farmacia deja de preparar los carros de dosis unitaria; enfermería retira la medicación del armario</div><div>Técnicos de farmacia, enfermería de 8 plantas, informática</div><div>Plan de implantación del dossier</div><div>Ahorro de tiempo de enfermería sin medir; dos plantas aún con prescripción en papel</div></div>
+  <div class="banda amb fade" data-at="2:2" style="top:440px">«Sin dato» también es información: le dice al Grupo de adopción dónde está el hueco y qué habría que medir. Lo que no se debe hacer es rellenar la casilla con una opinión presentada como si fuera un dato.</div>
+</div>
+
+<!-- 4. Clasificar por dimensión -->
+<div class="esc" id="e3"><div class="ejer int" id="x3"></div></div>
+<!-- 5. Dato, estimación, opinión o hueco -->
+<div class="esc" id="e4"><div class="ejer int" id="x4"></div></div>
+<!-- 6. Mapa de la Oficina -->
+<div class="esc" id="e5"><div class="ejer int" id="x5"></div></div>
+<!-- 7. El dato económico -->
+<div class="esc" id="e6"><div class="ejer int" id="x6"></div></div>
+
+<!-- 8. Cierre -->
+<div class="esc" id="e7">
+  <div class="lista">
+    <div class="lbl" style="padding:0;border:0;background:none">Antes de entregar los bloques 9 y 10</div>
+    <div>Cada casilla tiene una sola línea y dice algo concreto de vuestro caso.</div>
+    <div>En «a quién afecta» aparecen servicios o grupos de pacientes con nombre.</div>
+    <div>Cada dato dice de dónde sale: sobre D, sobres B y C, fabricante. Si no hay, pone «sin dato».</div>
+    <div>Las opiniones de las dos voces del sobre D están en «qué cambia» o en «incertidumbre», nunca en «dato».</div>
+    <div>Las cifras del fabricante o del proveedor llevan su origen al lado.</div>
+    <div>Hay al menos una incertidumbre que se podría resolver con un dato concreto: la usaréis en el bloque 11.</div>
+    <div>El dato económico se interpreta en una frase, sin recalcularlo, y se dice qué no incluye.</div>
+  </div>
+  <div class="errores">
+    <h3>Errores que más se repiten</h3>
+    <ul>
+      <li>Copiar la evidencia clínica de los sobres B y C en todas las filas.</li>
+      <li>Dejar en blanco la equidad porque el sobre D no usa esa palabra.</li>
+      <li>Escribir «ninguna» en incertidumbre.</li>
+      <li>Rehacer las cuentas del dato económico, o ignorarlo.</li>
+      <li>Aceptar sin más lo que dice la IA sobre el impacto: va a la tabla de verificación del cuaderno.</li>
+    </ul>
+  </div>
+  <div class="banda amb fade" data-at="7:1" style="top:470px">Con el mapa hecho llega el bloque 11: qué propone la Oficina y con qué condiciones. Eso se trabaja en la página siguiente de la colección, «De la evidencia a la decisión».</div>
+</div>
+
+    </div>
+  </div>
+</main>
+<script>
+
+window.ESCENAS=[
+ {t:"Más allá de la eficacia",p:"¿Qué queda por evaluar cuando ya sabemos si funciona?",c:"El HTA Core Model de EUnetHTA ordena una evaluación en nueve dominios. Los clínicos sirven en cualquier país; los demás dependen del sistema sanitario y del hospital donde se vaya a usar la tecnología. De esos trata el análisis de impacto.",f:"Kristensen FB, et al. HTA Core Model, versión 3.0 (EUnetHTA, 2016); Reglamento (UE) 2021/2282; Tema 1, apartado de impacto.",n:2},
+ {t:"Las cinco filas del mapa",p:"¿Qué preguntas hay que hacerse en cada dimensión?",c:"La ficha de impacto tiene cinco filas. No hace falta responderlo todo, pero sí haberse hecho estas preguntas. Si una fila queda vacía, que sea porque de verdad no cambia nada, no porque nadie lo ha pensado.",f:"Tema 1, apartados de impacto clínico, calidad de vida, equidad y organización; ficha de impacto de la práctica final, bloque 9.",n:2},
+ {t:"Las cuatro columnas",p:"¿Qué se escribe en cada casilla?",c:"Cada fila del mapa se contesta con cuatro columnas. La de dato es la que más cuesta: obliga a separar lo que se sabe de lo que alguien cree o de lo que vende un fabricante.",f:"Ficha de impacto de la práctica final, bloque 9. El caso de los armarios es ficticio.",n:3},
+ {t:"Cada fragmento en su fila",p:"¿A qué dimensión pertenece cada dato del dossier?",c:"Elegid un caso de práctica y asignad cada fragmento del dossier a una fila del mapa. Algunos encajan en dos: el ejercicio acepta ambas. Al comprobar, pulsad un fragmento para leer por qué.",f:"Casos de práctica ficticios, distintos de los de la práctica final.",n:1},
+ {t:"Dato, estimación u opinión",p:"¿Qué se puede poner en la columna de dato?",c:"Ahora los mismos fragmentos, clasificados por su naturaleza. Un dato del dossier o de los estudios va en la columna de dato. Una cifra del fabricante va con su origen. Una opinión no es un dato. Y donde no hay nada, se escribe «sin dato».",f:"Casos de práctica ficticios. Criterio: ficha de impacto, bloque 9.",n:1},
+ {t:"El mapa de la Oficina",p:"¿Cómo queda un mapa bien hecho?",c:"Así rellenaría el mapa una Oficina con el caso que hayáis elegido. Comparadlo con lo que habríais escrito: fijaos en la extensión de cada casilla y en las casillas en rojo, que marcan dónde no hay dato.",f:"Propuesta docente sobre casos ficticios. No es la única respuesta válida.",n:1},
+ {t:"El dato económico en una frase",p:"¿Qué significa para el hospital y qué no dice?",c:"El bloque 10 no pide cálculos. Pide leer bien un dato ya hecho: si el gasto es puntual o se repite, quién lo ha estimado y qué se ha quedado fuera. Elegid la frase que pondríais en el informe.",f:"Ficha de impacto, bloque 10. Datos ficticios. Los conceptos (RCEI, AVAC, impacto presupuestario) están en el Tema 3.",n:1},
+ {t:"Antes de entregar",p:"¿Está listo el mapa?",c:"Una última revisión de los bloques 9 y 10 antes de pasar a la propuesta. La lista sirve también para revisar el mapa que haya escrito la IA, si la habéis usado en la tarea 1.",f:"Ficha de impacto y cuaderno de IA de la práctica final.",n:2}
+];
+
+var DIM={pc:"Proceso clínico",org:"Organización",cv:"Calidad de vida y experiencia",eq:"Equidad",el:"Ética y legal"};
+var DIMC={pc:"Proceso",org:"Organización",cv:"Calidad de vida",eq:"Equidad",el:"Ética y legal"};
+var TIP={d:"Dato",e:"Estimación de parte",o:"Opinión",s:"Sin dato"};
+var CASOS=[
+ {n:"Armarios automatizados",ctx:"Hospital de Valdecierzo (ficticio), 240 camas en 8 plantas. Farmacia quiere sustituir la dosis unitaria por armarios automatizados de dispensación en las plantas.",
+  fr:[
+   {t:"Farmacia dejaría de preparar a diario los carros de dosis unitaria; dos técnicos pasarían a reponer los armarios.",d:"org",ty:"d",ex:"Cambia quién hace qué y dónde: es organización. Sale del plan de implantación del hospital, así que es un dato."},
+   {t:"Según el proveedor, el tiempo entre la prescripción y la primera dosis bajaría de 3,5 horas a 1 hora.",d:"pc",a:["cv"],ty:"e",ex:"El paciente recibe antes el tratamiento: es proceso clínico. Pero la cifra la da quien vende el equipo. Va con su origen y como incertidumbre."},
+   {t:"Supervisora de Medicina Interna: «Cada enfermera ganará media hora por turno».",d:"org",ty:"o",ex:"Es una expectativa razonable que nadie ha medido. Sirve para «qué cambia»; en la columna de dato va «sin dato»."},
+   {t:"Dos plantas siguen con prescripción en papel, y el armario necesita la prescripción electrónica para funcionar.",d:"org",a:["pc"],ty:"d",ex:"Es una condición de implantación: sin prescripción electrónica no hay armario. Dato del dossier, y una condición que llevar al bloque 11."},
+   {t:"El hospital no registra de forma sistemática los errores de administración de medicación.",d:"pc",ty:"s",ex:"Sin una cifra de partida no se podrá saber si los armarios reducen los errores. Es un hueco que la Oficina tiene que señalar y un dato que pedir para reevaluar."},
+   {t:"El personal se identifica en el armario con su huella dactilar.",d:"el",ty:"d",ex:"La huella es un dato biométrico del personal. Hay que resolver la base jurídica y la información a los trabajadores según la normativa de protección de datos."},
+   {t:"Solo se instalarían en las plantas médicas y quirúrgicas; Pediatría y Psiquiatría seguirían con el sistema actual.",d:"eq",ty:"d",ex:"Unos pacientes tendrían el circuito nuevo y otros no. Si el beneficio existe, se reparte de forma desigual: es equidad."},
+   {t:"En una planta piloto, el tiempo hasta recibir un analgésico pedido por el paciente bajó de 40 a 15 minutos (12 pacientes, sin grupo de comparación).",d:"cv",a:["pc"],ty:"d",ex:"Es lo que nota el paciente, por eso va en experiencia. Es un dato, pero muy débil: doce pacientes y ninguna comparación. Anotadlo con esa advertencia."}
+  ],
+  mapa:{pc:["La primera dosis llega antes tras la prescripción","Pacientes de planta y enfermería","Estimación del proveedor: de 3,5 h a 1 h","Errores de medicación de partida: sin dato"],
+        org:["Farmacia deja los carros; enfermería retira del armario","Técnicos de farmacia, enfermería, informática","Plan de implantación (dossier)","Ahorro de tiempo de enfermería sin medir; dos plantas en papel"],
+        cv:["El analgésico pedido llega antes","Pacientes ingresados","Piloto: de 40 a 15 min, 12 pacientes","Muestra mínima y sin comparación"],
+        eq:["Unas plantas tienen el circuito nuevo y otras no","Pacientes de Pediatría y Psiquiatría","Dossier: solo plantas médicas y quirúrgicas","Si el beneficio sería igual en esas plantas: sin dato"],
+        el:["Acceso al armario con huella dactilar","Personal de enfermería","Dossier","Base jurídica e información al personal, por resolver"]},
+  sd:{pc:[3],eq:[3]},
+  eco:{d:"Inversión de 410.000 € y 38.000 € al año de mantenimiento. El proveedor calcula que el ahorro en caducidades y en horas de técnico compensaría la inversión en cinco años.",
+   o:[{t:"Los armarios se pagan solos en cinco años, así que son coste-efectivos.",ok:0,fb:"Recuperar una inversión no es lo mismo que ser coste-efectivo: no compara costes con resultados en salud. Y el ahorro lo ha calculado el proveedor."},
+      {t:"Exige un gasto inicial alto y otro anual más pequeño. La recuperación en cinco años depende de ahorros que estima el proveedor y no incluye la formación ni la implantación de la prescripción electrónica en dos plantas.",ok:1,fb:"Dice qué tipo de gasto es, quién ha hecho la estimación y qué se ha quedado fuera. Es lo que pide el bloque 10."},
+      {t:"Con una tasa de descuento del 3 %, la inversión anualizada en diez años sería de unos 48.000 € al año.",ok:0,fb:"Puede que la cuenta esté bien, pero la ficha no pide rehacer cálculos. Y el número no dice nada nuevo sobre lo que significa para el hospital."},
+      {t:"El coste es secundario si mejora la seguridad del paciente.",ok:0,fb:"Ignora el coste de oportunidad: ese dinero deja de estar disponible para otra cosa. Además, no hay dato de que mejore la seguridad."}]}},
+ {n:"Tomosíntesis en el cribado",ctx:"Programa de cribado de cáncer de mama de un área ficticia: unas 30.000 mujeres invitadas al año. Se propone sustituir la mamografía digital por tomosíntesis.",
+  fr:[
+   {t:"Cada estudio tarda unos 90 segundos en leerse, frente a 45 de la mamografía digital.",d:"org",ty:"d",ex:"Más tiempo de radiólogo por mujer cribada con la misma plantilla: es organización. La cifra viene del dossier."},
+   {t:"Los estudios muestran que detecta más cánceres por cada 1.000 mujeres, pero no si reduce los cánceres de intervalo.",d:"pc",ty:"d",ex:"Cambia lo que encuentra el programa. Es un dato de los estudios con una incertidumbre clara: detectar más no siempre mejora el pronóstico."},
+   {t:"El fabricante asegura que las rellamadas para pruebas adicionales bajarán un 15 %.",d:"cv",a:["pc"],ty:"e",ex:"Cada rellamada son días de angustia aunque al final no haya nada: es experiencia de las mujeres, y también proceso. La cifra es del fabricante."},
+   {t:"Las dos unidades móviles que recorren los municipios pequeños no admiten el equipo nuevo.",d:"eq",ty:"d",ex:"Las mujeres de los pueblos seguirían con la técnica anterior o tendrían que desplazarse. Es equidad territorial."},
+   {t:"Las imágenes ocupan unas diez veces más que una mamografía y habría que ampliar el archivo de imagen (PACS).",d:"org",ty:"d",ex:"Infraestructura informática y coste añadido: organización. Dato del dossier."},
+   {t:"La carta de invitación actual no explica el riesgo de sobrediagnóstico.",d:"el",ty:"d",ex:"Participar en un cribado tiene que ser una decisión informada. Si se van a encontrar más lesiones, y algunas no habrían dado problemas, la carta tiene que decirlo."},
+   {t:"Jefe de Radiología: «Las mujeres la van a preferir».",d:"cv",ty:"o",ex:"Habla de la experiencia, pero nadie ha preguntado a las mujeres. Es una opinión."},
+   {t:"No hay datos de participación en el programa por barrio ni por nivel de renta.",d:"eq",ty:"s",ex:"Sin esa desagregación no se sabe a quién llega hoy el cribado ni a quién llegaría la mejora. La Oficina tiene que señalar el hueco."}
+  ],
+  mapa:{pc:["Se detectan más cánceres por cada 1.000 mujeres","Mujeres invitadas al programa","Estudios: más detección","Efecto en cánceres de intervalo: sin dato"],
+        org:["Lectura el doble de larga; archivo de imagen mucho mayor","Radiólogos del programa, informática","Dossier: 90 s frente a 45 s","Plan de plantilla para el tiempo extra: sin dato"],
+        cv:["Menos rellamadas y menos días de angustia","Mujeres con un resultado dudoso","Fabricante: 15 % menos rellamadas","Cifra no independiente; no se ha preguntado a las mujeres"],
+        eq:["Las unidades móviles siguen con la técnica anterior","Mujeres de municipios pequeños","Dossier: las dos unidades no admiten el equipo","Participación por barrio o renta: sin dato"],
+        el:["La invitación debe explicar el sobrediagnóstico","Todas las mujeres invitadas","Dossier: la carta actual no lo menciona","Cuánto sobrediagnóstico añade: sin dato"]},
+  sd:{pc:[3],org:[3],eq:[3],el:[3]},
+  eco:{d:"Coste por mujer cribada: 41 € con tomosíntesis frente a 29 € con mamografía digital. Son unos 360.000 € más al año para 30.000 mujeres. No hay un análisis de coste-efectividad del programa local.",
+   o:[{t:"Cuesta 12 € más por mujer, una cantidad pequeña para un programa de cribado.",ok:0,fb:"Mira el coste unitario y olvida que se multiplica por 30.000 mujeres cada año. Pequeño por mujer no es pequeño para el presupuesto."},
+      {t:"Si detecta más cánceres, el gasto está justificado.",ok:0,fb:"Mezcla dos cosas: detectar más no es lo mismo que mejorar la salud, y la frase no dice nada del coste. No hay análisis de coste-efectividad que lo respalde."},
+      {t:"Supone unos 360.000 € más cada año, un gasto que se repite. No sabemos si compensa: no hay análisis de coste-efectividad local y no incluye la ampliación del archivo de imagen ni el tiempo extra de radiólogo.",ok:1,fb:"Distingue gasto recurrente de inversión, reconoce que falta el análisis de coste-efectividad y nombra lo que no está contado."},
+      {t:"Con un AVAC ganado por cada 1.000 mujeres, la RCEI sería de unos 12.000 € por AVAC.",ok:0,fb:"Se inventa el denominador. Sin un dato de efectividad en AVAC no hay RCEI posible, y la ficha no pide calcularla."}]}},
+ {n:"Estimulador del hipogloso",ctx:"Hospital de Valdecierzo (ficticio). Otorrinolaringología propone implantar un estimulador del nervio hipogloso a adultos con apnea obstructiva del sueño que no toleran la CPAP.",
+  fr:[
+   {t:"Lo implanta Otorrinolaringología en quirófano; después hay que ajustar el estimulador en la unidad del sueño durante varias visitas.",d:"pc",a:["org"],ty:"d",ex:"Cambia el recorrido del paciente: cirugía y visitas de ajuste que hoy no existen. Es proceso clínico, y también organización."},
+   {t:"Solo dos otorrinolaringólogos tendrían la formación; el proveedor exige 20 implantes al año para mantener el soporte técnico.",d:"org",ty:"d",ex:"Personal, formación y un volumen mínimo: organización. El volumen es una condición de implantación que conviene llevar al bloque 11."},
+   {t:"Paciente de la asociación: «Con la mascarilla no duermo; prefiero operarme a seguir así».",d:"cv",ty:"o",ex:"La voz de un paciente es valiosa para la fila de experiencia, pero es una opinión, no una calidad de vida medida con un cuestionario."},
+   {t:"En los estudios, la somnolencia diurna medida con la escala de Epworth mejora a los 12 meses.",d:"cv",ty:"d",ex:"Es un resultado que nota el paciente, medido con una escala validada: dato de los estudios para la fila de calidad de vida."},
+   {t:"El fabricante afirma que el generador dura más de diez años.",d:"pc",a:["org"],ty:"e",ex:"Si dura menos, habrá recambios y nuevas cirugías. La cifra es del fabricante y no hay seguimientos tan largos: incertidumbre."},
+   {t:"El paciente tiene que recibir una tarjeta de implante y la información que exige el MDR.",d:"el",ty:"d",ex:"Obligación legal del Reglamento (UE) 2017/745, artículo 18, para los productos implantables. Va en ética y aspectos legales."},
+   {t:"El protocolo propuesto solo admite a candidatos que vivan a menos de una hora del hospital.",d:"eq",ty:"d",ex:"El criterio de distancia deja fuera a pacientes del medio rural con la misma necesidad. Es equidad territorial."},
+   {t:"No se sabe cuántos pacientes del área no toleran la CPAP.",d:"org",a:["pc"],ty:"s",ex:"Sin el número de candidatos no se puede saber si se llegará a los 20 implantes al año que pide el proveedor. Es un hueco importante."}
+  ],
+  mapa:{pc:["Cirugía y varias visitas de ajuste","Pacientes que no toleran la CPAP","Dossier","Duración del generador: solo la del fabricante"],
+        org:["Programa nuevo con dos cirujanos formados","ORL, quirófano, unidad del sueño","Proveedor: 20 implantes al año para el soporte","Número de candidatos del área: sin dato"],
+        cv:["Menos somnolencia durante el día","Pacientes implantados","Estudios: mejora en la escala de Epworth a 12 meses","Más allá del primer año: sin dato"],
+        eq:["Quedan fuera quienes viven a más de una hora","Pacientes del medio rural","Protocolo propuesto","Alternativa para ellos: sin dato"],
+        el:["Tarjeta de implante e información al paciente","Pacientes implantados","MDR, artículo 18","Qué pruebas de imagen podrán hacerse después, por confirmar"]},
+  sd:{org:[3],cv:[3],eq:[3]},
+  eco:{d:"El implante cuesta unos 28.000 € por paciente, una sola vez. Un análisis publicado en otro país estima una RCEI de 32.000 € por AVAC frente a no tratar.",
+   o:[{t:"Con 32.000 € por AVAC supera el umbral, así que no debe financiarse.",ok:0,fb:"Decide con un solo criterio y con un umbral que el caso no fija. Además, la RCEI viene de otro sistema sanitario, con otros precios."},
+      {t:"El gasto se concentra en el momento del implante. La RCEI de 32.000 € por AVAC procede de otro país y de otros precios: no sabemos si se mantiene aquí, ni con cuántos pacientes al año.",ok:1,fb:"Dice cuándo se gasta, de dónde sale la RCEI y por qué puede no valer aquí. Enlaza con el hueco del número de candidatos."},
+      {t:"La CPAP cuesta unos 300 € al año: en diez años son 3.000 €, así que el implante sale 25.000 € más caro.",ok:0,fb:"Recalcula, y además con el comparador equivocado: estos pacientes no toleran la CPAP. El análisis publicado compara con no tratar."},
+      {t:"Como no hay alternativa para estos pacientes, el coste no debería contar.",ok:0,fb:"La falta de alternativa pesa en la decisión, pero no hace desaparecer el coste. Es un argumento para el Grupo de adopción, no una lectura del dato."}]}}
+];
+var st={c:0,r3:{},r4:{},chk3:{},chk4:{},sel3:-1,sel4:-1,eco:{}};
+function k(){return st.c;}
+function tabs(){return '<div class="casos"><span class="lbl">Caso de práctica</span>'+CASOS.map(function(c,i){return '<button type="button" data-caso="'+i+'" aria-pressed="'+(i===st.c)+'">'+c.n+'</button>';}).join("")+'</div>';}
+function clave(m){return st.c+"-"+m;}
+function aciertoDim(f,v){return v===f.d||(f.a&&f.a.indexOf(v)>=0);}
+
+function pintar3(){
+  var c=CASOS[k()],r=st.r3[st.c]||{},chk=st.chk3[st.c],h="";
+  h+='<div class="cabej">'+tabs()+'<span class="marcador" id="m3"></span></div><div class="ctx">'+c.ctx+'</div>';
+  c.fr.forEach(function(f,i){
+    var v=r[i],cl="frag";
+    if(chk){cl+=aciertoDim(f,v)?" ok":" mal";cl+=" revisado";}
+    if(chk&&st.sel3===i)cl+=" sel";
+    h+='<div class="'+cl+'" data-fr="'+i+'"><span class="i">'+(i+1)+'</span><p>'+f.t+'</p><div class="ops">';
+    Object.keys(DIMC).forEach(function(d){
+      var c2="bt";if(chk){if(d===v)c2+=aciertoDim(f,d)?" ok":" mal";else if(d===f.d&&!aciertoDim(f,v))c2+=" esp";}
+      h+='<button type="button" class="'+c2+'" data-d="'+d+'" aria-pressed="'+(d===v)+'">'+DIMC[d]+'</button>';
+    });
+    h+='</div></div>';
+  });
+  var n=Object.keys(r).length,ac=0;c.fr.forEach(function(f,i){if(aciertoDim(f,r[i]))ac++;});
+  var fb=chk?(st.sel3>=0?'<b>'+(st.sel3+1)+'. '+DIM[c.fr[st.sel3].d]+(c.fr[st.sel3].a?' (también vale '+c.fr[st.sel3].a.map(function(x){return DIM[x];}).join(", ")+')':'')+'.</b> '+c.fr[st.sel3].ex:'Pulsad cualquier fragmento para leer la explicación. En verde, lo que coincide con la Oficina; el contorno verde marca la fila esperada cuando no coincide.'):'Elegid una fila para cada fragmento. Cuando estén los ocho, comprobad.';
+  h+='<div class="pie"><div class="fb '+(chk?(ac===8?"ok":"neu"):"")+'">'+fb+'</div>'+(chk?'<button type="button" class="acc sec" id="re3">Empezar de nuevo</button>':'<button type="button" class="acc" id="ck3"'+(n<8?' disabled':'')+'>Comprobar</button>')+'</div>';
+  var x=document.getElementById("x3");x.innerHTML=h;
+  document.getElementById("m3").innerHTML=chk?('<b>'+ac+' de 8</b> en la fila esperada'):('<b>'+n+' de 8</b> asignados');
+}
+function pintar4(){
+  var c=CASOS[k()],r=st.r4[st.c]||{},chk=st.chk4[st.c],h="";
+  h+='<div class="cabej">'+tabs()+'<span class="marcador" id="m4"></span></div><div class="ctx">'+c.ctx+'</div>';
+  c.fr.forEach(function(f,i){
+    var v=r[i],cl="frag";
+    if(chk){cl+=v===f.ty?" ok":" mal";cl+=" revisado";}
+    if(chk&&st.sel4===i)cl+=" sel";
+    h+='<div class="'+cl+'" data-fr="'+i+'"><span class="i">'+(i+1)+'</span><p>'+f.t+'</p><div class="ops">';
+    Object.keys(TIP).forEach(function(d){
+      var c2="bt";if(chk){if(d===v)c2+=d===f.ty?" ok":" mal";else if(d===f.ty)c2+=" esp";}
+      h+='<button type="button" class="'+c2+'" data-d="'+d+'" aria-pressed="'+(d===v)+'">'+TIP[d]+'</button>';
+    });
+    h+='</div></div>';
+  });
+  var n=Object.keys(r).length,ac=0;c.fr.forEach(function(f,i){if(r[i]===f.ty)ac++;});
+  var g={d:"Va en la columna de dato, citando su origen.",e:"Va en la columna de dato, pero con su origen al lado y como incertidumbre.",o:"No va en la columna de dato: sirve para «qué cambia» o para «incertidumbre».",s:"En la columna de dato se escribe «sin dato», y casi siempre genera una incertidumbre."};
+  var fb=chk?(st.sel4>=0?'<b>'+(st.sel4+1)+'. '+TIP[c.fr[st.sel4].ty]+'.</b> '+g[c.fr[st.sel4].ty]+' '+c.fr[st.sel4].ex:'Pulsad cualquier fragmento para ver qué se hace con él en el mapa.'):'Un dato sale del dossier o de los estudios. Una estimación de parte la da quien vende. Una opinión es de una persona. «Sin dato» es un hueco.';
+  h+='<div class="pie"><div class="fb '+(chk?(ac===8?"ok":"neu"):"")+'">'+fb+'</div>'+(chk?'<button type="button" class="acc sec" id="re4">Empezar de nuevo</button>':'<button type="button" class="acc" id="ck4"'+(n<8?' disabled':'')+'>Comprobar</button>')+'</div>';
+  var x=document.getElementById("x4");x.innerHTML=h;
+  document.getElementById("m4").innerHTML=chk?('<b>'+ac+' de 8</b> bien clasificados'):('<b>'+n+' de 8</b> clasificados');
+}
+function pintar5(){
+  var c=CASOS[k()],h='<div class="cabej">'+tabs()+'</div><div class="ctx">'+c.ctx+'</div>';
+  h+='<table class="mapa"><tr><th></th><th>Qué cambia</th><th>A quién afecta</th><th>Dato</th><th>Incertidumbre</th></tr>';
+  ["pc","org","cv","eq","el"].forEach(function(d){
+    h+='<tr><td>'+DIM[d]+'</td>'+c.mapa[d].map(function(x,j){var sd=c.sd[d]&&c.sd[d].indexOf(j)>=0;return '<td'+(sd?' class="sd"':'')+'>'+x+'</td>';}).join("")+'</tr>';
+  });
+  h+='</table><div class="fb neu">Cada casilla cabe en una línea de la ficha. Las casillas en rojo señalan un hueco: son las que dan pie a las condiciones y a los datos para reevaluar del bloque 11.</div>';
+  document.getElementById("x5").innerHTML=h;
+}
+function pintar6(){
+  var c=CASOS[k()],e=c.eco,sel=st.eco[st.c],h='<div class="cabej">'+tabs()+'</div>';
+  h+='<div class="lbl" style="margin-top:6px">El dato económico (ya calculado)</div><div class="eco">'+e.d+'</div><div class="lbl" style="margin-top:8px">¿Qué frase pondríais en el informe?</div>';
+  e.o.forEach(function(o,i){var cl="opc";if(sel!==undefined&&i===sel)cl+=o.ok?" ok":" mal";else if(sel!==undefined&&o.ok&&!e.o[sel].ok)cl+="";h+='<button type="button" class="'+cl+'" data-o="'+i+'">'+o.t+'</button>';});
+  if(sel!==undefined)h+='<div class="fb '+(e.o[sel].ok?"ok":"mal")+'"><b>'+(e.o[sel].ok?"Esta es la lectura que pide el bloque 10.":"Revisadla.")+'</b> '+e.o[sel].fb+'</div>';
+  else h+='<div class="fb">Tres preguntas para cualquier dato económico: ¿es un gasto puntual o se repite?, ¿quién lo ha calculado?, ¿qué coste o ahorro no se ha medido?</div>';
+  document.getElementById("x6").innerHTML=h;
+}
+function repintar(){pintar3();pintar4();pintar5();pintar6();}
+document.addEventListener("click",function(ev){
+  var b=ev.target.closest("button");
+  if(b&&b.dataset.caso!==undefined){st.c=+b.dataset.caso;st.sel3=-1;st.sel4=-1;repintar();return;}
+  var x3=ev.target.closest("#x3"),x4=ev.target.closest("#x4"),x6=ev.target.closest("#x6");
+  if(x3){
+    if(b&&b.id==="ck3"){st.chk3[st.c]=1;st.sel3=-1;pintar3();return;}
+    if(b&&b.id==="re3"){st.r3[st.c]={};st.chk3[st.c]=0;st.sel3=-1;pintar3();return;}
+    var fr=ev.target.closest(".frag");if(!fr)return;var i=+fr.dataset.fr;
+    if(st.chk3[st.c]){st.sel3=i;pintar3();return;}
+    if(b&&b.dataset.d){(st.r3[st.c]=st.r3[st.c]||{})[i]=b.dataset.d;pintar3();}
+    return;
+  }
+  if(x4){
+    if(b&&b.id==="ck4"){st.chk4[st.c]=1;st.sel4=-1;pintar4();return;}
+    if(b&&b.id==="re4"){st.r4[st.c]={};st.chk4[st.c]=0;st.sel4=-1;pintar4();return;}
+    var fr2=ev.target.closest(".frag");if(!fr2)return;var j=+fr2.dataset.fr;
+    if(st.chk4[st.c]){st.sel4=j;pintar4();return;}
+    if(b&&b.dataset.d){(st.r4[st.c]=st.r4[st.c]||{})[j]=b.dataset.d;pintar4();}
+    return;
+  }
+  if(x6&&b&&b.dataset.o!==undefined){st.eco[st.c]=+b.dataset.o;pintar6();}
+});
+document.addEventListener("DOMContentLoaded",repintar);
+
+</script>
+<script>
+(function(){
+  var escenas=window.ESCENAS,b=document.body,s=0,t=0,nav=document.querySelector("nav.puntos");
+  var $=function(id){return document.getElementById(id)};
+  escenas.forEach(function(e,i){
+    var bt=document.createElement("button");bt.type="button";bt.textContent=(i+1)+". "+e.t;
+    bt.addEventListener("click",function(ev){ev.stopPropagation();ir(i,0);});
+    nav.appendChild(bt);
+  });
+  function pintar(){
+    b.setAttribute("data-s",s);b.setAttribute("data-t",t);
+    var e=escenas[s];
+    $("num").textContent="Escena "+(s+1)+" de "+escenas.length;
+    $("tit").textContent=e.t;$("preg").textContent=e.p;$("cuerpo").textContent=e.c;$("fuente").textContent="Fuente: "+e.f;
+    $("paso").textContent=e.n>1?("Paso "+(t+1)+" de "+e.n):"";
+    $("ant").disabled=(s===0&&t===0);
+    $("sig").disabled=(s===escenas.length-1&&t===e.n-1);
+    nav.querySelectorAll("button").forEach(function(x,i){if(i===s)x.setAttribute("aria-current","step");else x.removeAttribute("aria-current");});
+    document.querySelectorAll("[data-at]").forEach(function(el){var p=el.getAttribute("data-at").split(":");el.classList.toggle("on",+p[0]===s&&t>=+p[1]);});
+    document.querySelectorAll(".esc").forEach(function(el,i){el.setAttribute("aria-hidden",i===s?"false":"true");if("inert" in el)el.inert=(i!==s);});
+    if(window.alPintar)window.alPintar(s,t);
+  }
+  function ir(ns,nt){s=Math.max(0,Math.min(escenas.length-1,ns));t=Math.max(0,Math.min(escenas[s].n-1,nt));pintar();}
+  function sig(){if(t<escenas[s].n-1){t++;pintar();}else if(s<escenas.length-1){ir(s+1,0);}}
+  function ant(){if(t>0){t--;pintar();}else if(s>0){ir(s-1,escenas[s-1].n-1);}}
+  window.irEscena=ir;
+  $("sig").addEventListener("click",function(ev){ev.stopPropagation();sig();});
+  $("ant").addEventListener("click",function(ev){ev.stopPropagation();ant();});
+  $("marco").addEventListener("click",function(ev){if(ev.target.closest(".int,button,select,input,a"))return;sig();});
+  document.addEventListener("keydown",function(ev){
+    var tg=ev.target,enCtl=tg&&tg.closest&&tg.closest("input,select,textarea,.int");
+    if(ev.key==="ArrowRight"||ev.key===" "||ev.key==="PageDown"||ev.key==="Enter"){if(enCtl||(tg.tagName==="BUTTON"&&ev.key!=="ArrowRight"))return;ev.preventDefault();sig();}
+    else if(ev.key==="ArrowLeft"||ev.key==="PageUp"){if(enCtl)return;ev.preventDefault();ant();}
+    else if(ev.key==="Home"){if(enCtl)return;ir(0,0);}
+    else if((ev.key==="f"||ev.key==="F")&&!enCtl){try{if(!document.fullscreenElement){document.documentElement.requestFullscreen().catch(function(){});}else{document.exitFullscreen();}}catch(e){}}
+  });
+  function escalar(){
+    var m=$("marco"),st=$("stage"),w=m.clientWidth,h=m.clientHeight;if(!w||!h)return;
+    var k=Math.min(w/1000,h/640)*0.96,x=(w-1000*k)/2,y=(h-640*k)/2;
+    st.style.transform="translate("+x+"px,"+y+"px) scale("+k+")";
+  }
+  window.addEventListener("resize",escalar);
+  if(window.ResizeObserver){new ResizeObserver(escalar).observe($("marco"));}
+  pintar();escalar();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>De la evidencia a la decisión: estrategias de decisión y Grupo de adopción</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Granate UCLM para la estructura; ámbar para el bloque de impacto y decisión del Tema 1;
+     verde para lo correcto y rojo para lo que hay que revisar en los ejercicios. */
+  --granate:#A3002F; --granate-claro:#F7E4E9;
+  --verde:#25695C; --verde-claro:#E1EFEB;
+  --ambar:#B4621B; --ambar-claro:#F6EADF;
+  --rojo:#B3261E; --rojo-claro:#F8E1DF;
+  --pizarra:#35577A; --pizarra-claro:#E3EAF2;
+  --tinta:#2A2125; --gris:#6C6266; --linea:#DED6D9; --papel:#FFFFFF; --fondo:#F6F3F4;
+  --f-disp:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;
+  --f-cuerpo:"IBM Plex Sans",Arial,Helvetica,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--fondo);color:var(--tinta);font-family:var(--f-cuerpo);display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:20px;padding:12px 24px;background:var(--papel);border-bottom:1px solid var(--linea);flex-wrap:wrap}
+.volver{font:600 13px var(--f-cuerpo);color:var(--granate);text-decoration:none;border:1px solid var(--granate);border-radius:999px;padding:4px 11px}
+.volver:hover{background:var(--granate);color:#fff}
+.marca{font-family:var(--f-disp);font-weight:700;color:var(--granate);font-size:15px;letter-spacing:.02em}
+.marca span{color:var(--gris);font-weight:500}
+nav.puntos{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+nav.puntos button{font:500 13px var(--f-cuerpo);border:1px solid var(--linea);background:var(--papel);color:var(--gris);border-radius:999px;padding:5px 11px;cursor:pointer}
+nav.puntos button[aria-current="step"]{background:var(--granate);border-color:var(--granate);color:#fff}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--ambar);outline-offset:2px}
+main{flex:1;display:grid;grid-template-columns:minmax(280px,360px) 1fr;min-height:0}
+aside{padding:28px 26px 20px;display:flex;flex-direction:column;gap:12px;background:var(--papel);border-right:1px solid var(--linea);overflow:auto}
+.num{font-family:var(--f-disp);font-weight:600;color:var(--granate);font-size:15px;letter-spacing:.06em;text-transform:uppercase}
+aside h1{font-family:var(--f-disp);font-weight:700;font-size:38px;line-height:1.02;margin:0;text-wrap:balance}
+.pregunta{font-size:19px;font-style:italic;color:var(--granate);margin:0}
+.cuerpo{font-size:16px;line-height:1.55;margin:0;max-width:62ch}
+.fuente{font-size:12.5px;color:var(--gris);margin-top:auto;border-top:1px solid var(--linea);padding-top:10px;line-height:1.45}
+.ctl{display:flex;gap:8px;align-items:center}
+.ctl button{font:600 14px var(--f-cuerpo);border:1px solid var(--granate);background:var(--papel);color:var(--granate);border-radius:6px;padding:8px 14px;cursor:pointer}
+.ctl button.prim{background:var(--granate);color:#fff}
+.ctl button:disabled{opacity:.35;cursor:default}
+.ctl .paso{font-size:12.5px;color:var(--gris);margin-left:6px;font-variant-numeric:tabular-nums}
+.marco{position:relative;min-height:0;overflow:hidden;cursor:pointer}
+.stage{position:absolute;left:0;top:0;width:1000px;height:640px;transform-origin:0 0}
+.esc{position:absolute;left:0;top:0;width:1000px;height:640px;opacity:0;pointer-events:none;transition:opacity 500ms ease}
+.int{cursor:auto}
+.fade{opacity:0;transition:opacity 600ms ease,transform 600ms ease;transform:translateY(8px)}
+.fade.on{opacity:1;transform:none}
+.card{background:var(--papel);border:1px solid var(--linea);border-radius:10px;box-shadow:0 6px 20px rgba(60,20,30,.08);padding:16px 18px}
+.tipo{font:600 12px var(--f-cuerpo);letter-spacing:.08em;text-transform:uppercase;color:var(--gris)}
+.banda{position:absolute;left:30px;width:940px;padding:13px 18px;border-left:4px solid var(--granate);background:var(--papel);border-radius:0 8px 8px 0;font-size:15.5px;line-height:1.45}
+.banda.amb{border-left-color:var(--ambar)}
+.lbl{font:600 12px var(--f-cuerpo);letter-spacing:.08em;text-transform:uppercase;color:var(--gris);margin:0 0 6px}
+/* Pestañas de caso y botones de los ejercicios */
+.casos{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.casos .lbl{margin:0 6px 0 0}
+.casos button{font:600 13px var(--f-cuerpo);border:1px solid var(--ambar);background:var(--papel);color:var(--ambar);border-radius:999px;padding:4px 12px;cursor:pointer}
+.casos button[aria-pressed="true"]{background:var(--ambar);color:#fff}
+.bt{font:600 12.5px var(--f-cuerpo);border:1px solid var(--linea);background:var(--papel);color:var(--tinta);border-radius:999px;padding:4px 10px;cursor:pointer;white-space:nowrap}
+.bt:hover{border-color:var(--granate)}
+.bt[aria-pressed="true"]{background:var(--granate);border-color:var(--granate);color:#fff}
+.bt.ok{background:var(--verde);border-color:var(--verde);color:#fff}
+.bt.esp{box-shadow:inset 0 0 0 2px var(--verde);color:var(--verde)}
+.bt.mal{background:var(--rojo);border-color:var(--rojo);color:#fff}
+.acc{font:600 14px var(--f-cuerpo);border:1px solid var(--granate);background:var(--granate);color:#fff;border-radius:6px;padding:7px 14px;cursor:pointer}
+.acc.sec{background:var(--papel);color:var(--granate)}
+.acc:disabled{opacity:.4;cursor:default}
+.fb{border-radius:8px;padding:10px 14px;font-size:14.5px;line-height:1.45;background:var(--fondo);border-left:4px solid var(--gris)}
+.fb.ok{background:var(--verde-claro);border-left-color:var(--verde)}
+.fb.mal{background:var(--rojo-claro);border-left-color:var(--rojo)}
+.fb.neu{background:var(--ambar-claro);border-left-color:var(--ambar)}
+.fb b{font-weight:600}
+.marcador{font:600 13.5px var(--f-cuerpo);color:var(--gris)}
+.marcador b{color:var(--tinta)}
+
+/* Escena 1: evaluar, valorar, decidir */
+.fun{position:absolute;top:24px;width:296px;height:300px;border-radius:10px;background:var(--papel);border:1px solid var(--linea);border-top:5px solid var(--granate);padding:14px 16px;font-size:14.5px;line-height:1.45}
+.fun .verbo{font:700 30px/1 var(--f-disp);color:var(--granate);margin:2px 0 4px}
+.fun h3{margin:0 0 8px;font:700 17px/1.15 var(--f-disp)}
+.fun .art{display:inline-block;margin-top:8px;font:600 12px var(--f-cuerpo);color:var(--gris)}
+.flecha{position:absolute;top:160px;font:700 28px var(--f-disp);color:var(--granate)}
+.hosp{position:absolute;left:30px;top:350px;width:940px;border-radius:10px;background:var(--pizarra-claro);border-left:4px solid var(--pizarra);padding:12px 16px;font-size:15px;line-height:1.45}
+.hosp b{font-family:var(--f-disp);font-size:18px;color:var(--pizarra)}
+/* Escena 2: cinco decisiones */
+.dec{position:absolute;top:22px;width:180px;height:430px;border-radius:10px;background:var(--papel);border:1px solid var(--linea);padding:12px 13px;font-size:13.5px;line-height:1.4;display:flex;flex-direction:column;gap:6px}
+.dec h3{margin:0;font:700 19px/1.1 var(--f-disp);color:#fff;padding:8px 10px;border-radius:6px;margin:-4px -5px 4px}
+.dec .q{font:600 11.5px var(--f-cuerpo);letter-spacing:.07em;text-transform:uppercase;color:var(--gris)}
+.dec .esc2{opacity:0;transition:opacity 500ms}
+[data-s="1"][data-t="1"] .dec .esc2{opacity:1}
+.d-no h3{background:#8E2A2A} .d-si h3{background:var(--verde)} .d-co h3{background:#1F6F78} .d-tu h3{background:var(--ambar)} .d-de h3{background:#5B4E55}
+/* Escena 3: árbol */
+.arbol{position:absolute;left:24px;top:14px;width:952px;height:612px;display:grid;grid-template-columns:500px 1fr;gap:16px}
+.preg{background:var(--papel);border:1px solid var(--linea);border-radius:8px;padding:7px 12px;margin-bottom:6px}
+.preg .lbl{margin-bottom:3px}
+.preg p{margin:0 0 5px;font-size:13.8px;line-height:1.32}
+.preg .ops{display:flex;gap:5px;flex-wrap:wrap}
+.preg.off{opacity:.38}
+.res{border-radius:10px;padding:14px 16px;background:var(--papel);border:1px solid var(--linea);font-size:14.2px;line-height:1.45;display:flex;flex-direction:column;gap:8px}
+.res .grande{font:700 30px/1.05 var(--f-disp)}
+.res h4{margin:4px 0 0;font:600 12px var(--f-cuerpo);letter-spacing:.07em;text-transform:uppercase;color:var(--gris)}
+.res ul{margin:0;padding-left:18px}
+.preset{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.preset button{font:600 12px var(--f-cuerpo);border:1px solid var(--ambar);background:var(--papel);color:var(--ambar);border-radius:999px;padding:3px 10px;cursor:pointer}
+.preset button[aria-pressed="true"]{background:var(--ambar);color:#fff}
+/* Escena 4: un número no basta */
+.umbral{position:absolute;left:30px;top:30px;width:440px;height:330px}
+.multi{position:absolute;left:520px;top:30px;width:450px;height:330px}
+.eje{position:absolute;left:0;bottom:40px;width:100%;height:2px;background:var(--linea)}
+.barra{position:absolute;bottom:42px;border-radius:6px 6px 0 0}
+.linea-u{position:absolute;left:0;width:100%;border-top:2px dashed var(--rojo)}
+.cr{display:grid;grid-template-columns:150px 1fr 30px;gap:8px;align-items:center;font-size:13.5px;margin-bottom:9px}
+.cr .b{height:16px;border-radius:4px;background:var(--ambar)}
+.cr .b.g{background:var(--fondo);border:1px dashed var(--gris)}
+.tit4{font:700 21px var(--f-disp);margin:0 0 12px}
+/* Escena 5: hoja de puntuación */
+.hoja{position:absolute;left:24px;top:14px;width:952px;height:612px;display:grid;grid-template-columns:560px 1fr;gap:18px}
+.crit{display:grid;grid-template-columns:200px 1fr 70px;gap:10px;align-items:center;background:var(--papel);border:1px solid var(--linea);border-radius:8px;padding:8px 12px;margin-bottom:7px}
+.crit b{font:700 15.5px/1.15 var(--f-disp)}
+.crit small{display:block;font-size:12px;color:var(--gris);font-weight:400;font-family:var(--f-cuerpo)}
+.pts{display:flex;gap:4px}
+.pts button{width:34px;font:600 14px var(--f-cuerpo);border:1px solid var(--linea);background:var(--papel);border-radius:6px;padding:4px 0;cursor:pointer}
+.pts button[aria-pressed="true"]{background:var(--granate);border-color:var(--granate);color:#fff}
+.peso{font:600 13px var(--f-cuerpo);color:var(--pizarra);text-align:right;font-variant-numeric:tabular-nums}
+.papeles{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.papeles button{font:600 12.5px var(--f-cuerpo);border:1px solid var(--pizarra);background:var(--papel);color:var(--pizarra);border-radius:999px;padding:4px 10px;cursor:pointer}
+.papeles button[aria-pressed="true"]{background:var(--pizarra);color:#fff}
+.total{background:var(--papel);border:1px solid var(--linea);border-radius:10px;padding:14px 16px}
+.total .grande{font:700 46px/1 var(--f-disp);color:var(--pizarra);font-variant-numeric:tabular-nums}
+.contrib{display:grid;grid-template-columns:120px 1fr 34px;gap:8px;align-items:center;font-size:12.5px;margin-top:6px}
+.contrib .b{height:12px;border-radius:3px;background:var(--pizarra)}
+.cmp{margin-top:10px;font-size:13px;line-height:1.4}
+.cmp div{display:grid;grid-template-columns:1fr 40px;gap:6px;padding:2px 0;border-top:1px solid var(--linea)}
+.cmp div.act{font-weight:600;color:var(--pizarra)}
+/* Escena 6: deliberación */
+.fase6{position:absolute;top:28px;width:146px;height:200px;border-radius:10px;background:var(--papel);border:1px solid var(--linea);padding:12px 12px;font-size:13.5px;line-height:1.38}
+.fase6 .n{font:700 28px/1 var(--f-disp);color:var(--granate)}
+.fase6 b{display:block;font:700 16.5px/1.12 var(--f-disp);margin:4px 0 5px}
+.aporta{position:absolute;left:30px;top:262px;width:940px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.aporta div{border-radius:10px;background:var(--ambar-claro);padding:12px 13px;font-size:14px;line-height:1.4}
+.aporta b{display:block;font:700 17px var(--f-disp);color:var(--ambar);margin-bottom:3px}
+/* Escena 7: la sesión */
+.crono{position:absolute;left:30px;top:26px;width:940px;height:86px;display:flex;border-radius:10px;overflow:hidden}
+.crono div{padding:10px 12px;color:#fff;font-size:13.5px;line-height:1.3}
+.crono b{display:block;font:700 22px var(--f-disp)}
+.papel{position:absolute;width:300px;height:96px;border-radius:9px;background:var(--papel);border:1px solid var(--linea);padding:9px 12px;font-size:13px;line-height:1.35}
+.papel b{display:block;font:700 15.5px/1.15 var(--f-disp);margin-bottom:2px}
+.nivel{position:absolute;left:30px;top:480px;width:940px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.nivel div{border-radius:10px;border:1px solid var(--linea);background:var(--papel);padding:10px 13px;font-size:13.5px;line-height:1.4}
+.nivel b{display:block;font:700 17px var(--f-disp);color:var(--pizarra)}
+/* Escena 8: la propuesta */
+.prop{position:absolute;top:24px;width:455px;border-radius:10px;background:var(--papel);border:1px solid var(--linea);padding:14px 16px;font-size:14.2px;line-height:1.45}
+.prop h3{margin:0 0 8px;font:700 20px var(--f-disp)}
+.prop.mala{left:30px;border-top:5px solid var(--rojo)} .prop.mala h3{color:var(--rojo)}
+.prop.buena{left:515px;border-top:5px solid var(--verde)} .prop.buena h3{color:var(--verde)}
+.prop .chip{display:inline-block;font:600 12.5px var(--f-cuerpo);border-radius:999px;padding:3px 10px;color:#fff;margin-bottom:8px}
+.prop ol{margin:6px 0 0;padding-left:18px}
+.nota{position:absolute;font-size:12.5px;color:var(--rojo);font-style:italic}
+
+[data-s="0"] #e0,[data-s="1"] #e1,[data-s="2"] #e2,[data-s="3"] #e3,[data-s="4"] #e4,[data-s="5"] #e5,[data-s="6"] #e6,[data-s="7"] #e7{opacity:1;pointer-events:auto}
+@media (max-width:900px){
+  main{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  aside{border-right:0;border-bottom:1px solid var(--linea);padding:18px 16px}
+  aside h1{font-size:30px}
+  .marco{min-height:66vw}
+  header{padding:10px 16px}
+}
+@media (prefers-reduced-motion:reduce){*{transition-duration:1ms !important}}
+</style>
+</head>
+<body data-s="0" data-t="0">
+<header>
+  <a class="volver" href="../../index.html">← Colección</a>
+  <div class="marca">Tema 1 · Impacto y decisión <span>· Estrategias de decisión (bloque 11 y fase 5 de la práctica)</span></div>
+  <nav class="puntos" aria-label="Escenas"></nav>
+</header>
+<main>
+  <aside aria-live="polite">
+    <div class="num" id="num">Escena 1</div>
+    <h1 id="tit"></h1>
+    <p class="pregunta" id="preg"></p>
+    <p class="cuerpo" id="cuerpo"></p>
+    <div class="ctl">
+      <button type="button" id="ant">← Anterior</button>
+      <button type="button" id="sig" class="prim">Siguiente →</button>
+      <span class="paso" id="paso"></span>
+    </div>
+    <div class="fuente" id="fuente"></div>
+  </aside>
+  <div class="marco" id="marco" role="region" aria-label="Estrategias de decisión en evaluación de tecnologías sanitarias, con un árbol de decisión y una hoja de puntuación">
+    <div class="stage" id="stage">
+
+<!-- 1. Evaluar, valorar, decidir -->
+<div class="esc" id="e0">
+  <div class="fun" style="left:30px"><div class="verbo">Evaluar</div><h3>Oficinas de evaluación</h3>Reúnen y analizan la evidencia clínica y no clínica. Su informe no contiene juicios sobre la adopción, la financiación, el precio ni la inclusión en cartera.<br><span class="art">RD 415/2026, art. 7.5</span></div>
+  <div class="flecha" style="left:334px">→</div>
+  <div class="fun" style="left:352px"><div class="verbo">Valorar</div><h3>Grupo de adopción</h3>Hace la valoración final sobre la posición relativa de la tecnología. Lo forman representantes de todas las comunidades autónomas, de varios ministerios, de los profesionales sanitarios, de la economía de la salud, de los pacientes y de los consumidores.<br><span class="art">RD 415/2026, art. 7.5 y disp. adic. 1.ª</span></div>
+  <div class="flecha" style="left:656px">→</div>
+  <div class="fun" style="left:674px"><div class="verbo">Decidir</div><h3>Órganos decisores</h3>El Ministerio de Sanidad y el Consejo Interterritorial, con la Comisión de Prestaciones, Aseguramiento y Financiación, resuelven sobre la cartera común. Las evaluaciones no son vinculantes.<br><span class="art">RD 415/2026, art. 15.1</span></div>
+  <div class="hosp fade" data-at="0:1"><b>¿Y la práctica final?</b> El Hospital General de Sierra Alta reproduce el mismo reparto a escala de centro: la Oficina evalúa y propone, el Grupo de adopción valora en voz alta y la Comisión de Tecnología decide. Las decisiones de hospital (qué se compra, en qué servicio, con qué condiciones) son evaluación de base hospitalaria. Por eso la Oficina sí redacta una propuesta en el bloque 11, cosa que las Oficinas del Real Decreto no hacen.</div>
+  <div class="banda fade" data-at="0:1" style="top:478px">Separar estas funciones protege a quien evalúa de la presión de quien paga, y obliga a quien decide a explicar por qué se aparta del informe si lo hace.</div>
+</div>
+
+<!-- 2. Cinco decisiones -->
+<div class="esc" id="e1">
+  <div class="dec d-no" style="left:30px"><h3>No incorporar</h3><span class="q">Encaja cuando</span>El balance es desfavorable o nulo, o la tecnología no aporta frente a lo que ya hay.<div class="esc2"><span class="q">Qué hay que añadir</span><br>Qué tendría que cambiar (evidencia nueva, precio) para volver a evaluarla.</div></div>
+  <div class="dec d-si" style="left:218px"><h3>Incorporar</h3><span class="q">Encaja cuando</span>El beneficio neto es claro, con certeza alta o moderada, y no depende de dónde ni de quién la use.<div class="esc2"><span class="q">Qué hay que añadir</span><br>Cómo se seguirá su uso real y cuándo se revisará.</div></div>
+  <div class="dec d-co" style="left:406px"><h3>Incorporar con condiciones</h3><span class="q">Encaja cuando</span>El beneficio existe, pero solo en ciertos pacientes, centros o formas de uso.<div class="esc2"><span class="q">Qué hay que añadir</span><br>Condiciones que se puedan comprobar: subgrupo, volumen mínimo, centros, formación, indicadores.</div></div>
+  <div class="dec d-tu" style="left:594px"><h3>Uso tutelado o estudio controlado</h3><span class="q">Encaja cuando</span>Puede haber beneficio, la certeza es baja y la incertidumbre se puede reducir con datos en un plazo razonable.<div class="esc2"><span class="q">Qué hay que añadir</span><br>Centros, protocolo, qué se mide, durante cuánto tiempo y qué resultado llevaría a cada decisión.</div></div>
+  <div class="dec d-de" style="left:782px"><h3>Desinvertir</h3><span class="q">Encaja cuando</span>Algo que ya se usa resulta no aportar, o hay una alternativa claramente mejor.<div class="esc2"><span class="q">Qué hay que añadir</span><br>Cómo se retira, qué lo sustituye y cómo se explica a profesionales y pacientes.</div></div>
+  <div class="banda amb fade" data-at="1:1" style="top:476px">El uso tutelado tiene base legal en el artículo 22 de la Ley 16/2003 de cohesión y calidad del SNS. El RD 415/2026 (art. 17.3) prevé, tras una reevaluación, recomendar la desinversión o programas piloto con datos de la vida real. En la práctica final se vota entre las cuatro primeras: la desinversión aparece cuando la tecnología ya está en uso.</div>
+</div>
+
+<!-- 3. Árbol -->
+<div class="esc" id="e2"><div class="arbol int" id="x2"></div></div>
+
+<!-- 4. Un número no basta -->
+<div class="esc" id="e3">
+  <div class="umbral"><div class="tit4">Un solo criterio</div>
+    <div class="eje"></div>
+    <div class="barra" style="left:70px;width:90px;height:150px;background:var(--verde)"></div>
+    <div class="barra" style="left:250px;width:90px;height:230px;background:var(--rojo)"></div>
+    <div class="linea-u" style="bottom:232px"></div>
+    <div style="position:absolute;left:0;bottom:238px;font-size:12.5px;color:var(--rojo)">Umbral de coste por AVAC</div>
+    <div style="position:absolute;left:52px;bottom:12px;width:130px;text-align:center;font-size:13px">Tecnología A<br><b>se financia</b></div>
+    <div style="position:absolute;left:232px;bottom:12px;width:130px;text-align:center;font-size:13px">Tecnología B<br><b>no se financia</b></div>
+  </div>
+  <div class="multi"><div class="tit4">Varios criterios a la vista</div>
+    <div class="cr"><span>Gravedad y necesidad</span><div class="b" style="width:92%"></div><span>3</span></div>
+    <div class="cr"><span>Beneficio y certeza</span><div class="b" style="width:62%"></div><span>2</span></div>
+    <div class="cr"><span>Organización</span><div class="b" style="width:31%"></div><span>1</span></div>
+    <div class="cr"><span>Equidad</span><div class="b" style="width:92%"></div><span>3</span></div>
+    <div class="cr"><span>Coste y sostenibilidad</span><div class="b" style="width:31%"></div><span>1</span></div>
+    <div class="cr"><span>Lo que no se mide</span><div class="b g" style="width:100%"></div><span>?</span></div>
+    <div style="font-size:13px;color:var(--gris)">Tecnología B, puntuada de 0 a 3 en cada criterio</div>
+  </div>
+  <div class="banda fade" data-at="3:1" style="top:390px">Decidir solo con un umbral de RCEI es transparente y fácil de aplicar, pero deja fuera la gravedad, la falta de alternativas, la equidad y el impacto organizativo. El análisis de decisión multicriterio (MCDA) pone esos criterios sobre la mesa, los puntúa y explicita cuánto pesa cada uno. No quita el juicio de valor: lo deja escrito para que se pueda discutir.</div>
+  <div class="banda amb fade" data-at="3:1" style="top:512px">EVIDEM es uno de los marcos MCDA más usados en ETS. La hoja de puntuación de la práctica final usa cinco de sus criterios, simplificados.</div>
+</div>
+
+<!-- 5. Hoja de puntuación -->
+<div class="esc" id="e4"><div class="hoja int" id="x4"></div></div>
+
+<!-- 6. Deliberación -->
+<div class="esc" id="e5">
+  <div class="fase6" style="left:30px"><span class="n">1</span><b>Decidir si hace falta</b>No todas las decisiones necesitan una mesa: depende de lo que está en juego.</div>
+  <div class="fase6" style="left:189px"><span class="n">2</span><b>Prepararla</b>Quién participa, con qué información y con qué reglas.</div>
+  <div class="fase6" style="left:348px"><span class="n">3</span><b>Celebrarla</b>Presentar, preguntar, sopesar argumentos y evidencia.</div>
+  <div class="fase6" style="left:507px"><span class="n">4</span><b>Darle soporte</b>Moderación, tiempos y gestión de los conflictos de interés.</div>
+  <div class="fase6" style="left:666px"><span class="n">5</span><b>Comunicar el resultado</b>Decisión, criterios que pesaron y desacuerdos, por escrito.</div>
+  <div class="fase6" style="left:825px"><span class="n">6</span><b>Evaluar el proceso</b>Revisar si la deliberación funcionó y mejorarla.</div>
+  <div class="aporta fade" data-at="5:1">
+    <div><b>Gravedad vivida</b>Lo que pesa una enfermedad más allá de su mortalidad.</div>
+    <div><b>Falta de alternativas</b>Para quién no hay otra opción, y qué pasa si se dice que no.</div>
+    <div><b>Viabilidad real</b>Si la tecnología cabe en el día a día del servicio.</div>
+    <div><b>Valores de los pacientes</b>Preferencias que no aparecen en los estudios.</div>
+  </div>
+  <div class="banda fade" data-at="5:1" style="top:400px">La deliberación trabaja sobre la evidencia ya generada; no la sustituye. Cuando la evidencia es escasa, la pregunta suele cambiar: ya no es «¿se financia?», sino «¿merece la pena pagar por generar los datos que faltan?».</div>
+</div>
+
+<!-- 7. La sesión del Grupo de adopción -->
+<div class="esc" id="e6">
+  <div class="crono">
+    <div style="flex:7;background:var(--granate)"><b>7 min</b>Exposición de la Oficina</div>
+    <div style="flex:6;background:#7A1F3D"><b>6 min</b>Preguntas del Grupo, con la pregunta sobre la IA</div>
+    <div style="flex:6;background:var(--pizarra)"><b>6 min</b>Deliberación en voz alta: cada miembro puntúa y justifica</div>
+    <div style="flex:3;background:var(--verde)"><b>3 min</b>Voto y acta</div>
+  </div>
+  <div class="papel" style="left:30px;top:132px"><b>CC. AA. con hospital de referencia</b>«¿Qué volumen mínimo y qué centros proponéis?»</div>
+  <div class="papel" style="left:350px;top:132px"><b>CC. AA. sin hospital de referencia</b>«¿Cuántos kilómetros más harán nuestros pacientes?»</div>
+  <div class="papel" style="left:670px;top:132px"><b>Profesional clínico</b>«¿Los pacientes de los estudios se parecen a los nuestros?»</div>
+  <div class="papel" style="left:30px;top:240px"><b>Economista de la salud</b>«¿El gasto es puntual o se repite cada año?»</div>
+  <div class="papel" style="left:350px;top:240px"><b>Representante de pacientes</b>«¿Quién se queda fuera, y por qué?»</div>
+  <div class="papel" style="left:670px;top:240px"><b>Secretaría</b>«¿Esto está en el informe o lo estamos suponiendo?»</div>
+  <div class="banda fade" data-at="6:1" style="top:352px"><b>La pregunta obligatoria:</b> «¿Qué os dijo la IA que resultó ser falso o exagerado?». Preparad un ejemplo concreto del cuaderno: qué dijo, cómo lo detectasteis y qué habría pasado si llega al informe.</div>
+  <div class="nivel fade" data-at="6:2">
+    <div><b>Hospital</b>Compras, implantación y organización interna, cuando el impacto se queda en el centro.</div>
+    <div><b>Servicio de salud</b>Cuando afecta a la red asistencial: derivaciones, centros de referencia, atención primaria.</div>
+    <div><b>Sistema Nacional de Salud</b>Cuando se trata de la cartera común: lo decide el Ministerio tras el Grupo de adopción del RD 415/2026.</div>
+  </div>
+</div>
+
+<!-- 8. La propuesta -->
+<div class="esc" id="e7">
+  <div class="prop mala"><h3>Así no</h3><span class="chip" style="background:#1F6F78">Incorporar con condiciones</span><br>«Proponemos incorporar la tomosíntesis con condiciones, garantizando la calidad y la equidad, y evaluarla más adelante.»
+    <div class="nota" style="position:static;margin-top:10px">Ninguna condición se puede comprobar. «Más adelante» no es un plazo. No dice qué dato haría cambiar la decisión.</div></div>
+  <div class="prop buena"><h3>Así sí</h3><span class="chip" style="background:var(--ambar)">Estudio controlado</span><br>«Proponemos usar la tomosíntesis durante dos años en una de las dos unidades fijas, con lectura doble, y mantener la mamografía digital en el resto del programa.»
+    <ol><li>Medir los cánceres de intervalo y las rellamadas en ambos grupos.</li><li>Registrar la participación por municipio.</li><li>Pedir al fabricante una solución para las unidades móviles antes de ampliarla.</li><li>Reevaluar a los dos años: si no bajan los cánceres de intervalo, no se amplía.</li></ol></div>
+  <div class="banda fade" data-at="7:1" style="top:400px">Una propuesta útil cabe en cuatro piezas: la decisión, a quién o dónde se aplica, qué se medirá y qué resultado llevaría a revisarla. Las condiciones salen de las casillas en rojo del mapa de impacto.</div>
+  <div class="banda amb fade" data-at="7:1" style="top:500px">El caso de la tomosíntesis es ficticio, igual que la propuesta. Con la misma evidencia, otra Oficina podría proponer otra cosa: lo que se evalúa es que la propuesta se sostenga con los datos del caso.</div>
+</div>
+
+    </div>
+  </div>
+</main>
+<script>
+
+window.ESCENAS=[
+ {t:"Evaluar, valorar, decidir",p:"¿Quién hace qué entre el informe y la decisión?",c:"El Real Decreto 415/2026 reparte el trabajo en tres funciones distintas y las asigna a órganos distintos. Conviene tenerlo claro antes de redactar una propuesta: según el nivel en el que se decida, la Oficina puede proponer o tiene que limitarse a evaluar.",f:"Real Decreto 415/2026, arts. 7.5 y 15.1 y disposición adicional primera (BOE núm. 131, de 29 de mayo de 2026).",n:2},
+ {t:"Las cinco decisiones",p:"¿Qué se puede decidir?",c:"La decisión no es sí o no. Hay cinco salidas, y cada una obliga a escribir algo más que la palabra que la nombra. El segundo paso muestra qué.",f:"Tema 1; Ley 16/2003, art. 22; RD 415/2026, arts. 1.1 y 17.3.",n:2},
+ {t:"El árbol de la decisión",p:"¿Qué decisión encaja con lo que sabemos?",c:"Responded a las preguntas con los datos de un caso. El árbol propone la decisión que mejor encaja con la evidencia y con el impacto, y avisa de lo que no ve. Podéis cargar uno de los seis casos de práctica y comparar vuestras respuestas con las de la Oficina.",f:"Esquema docente. No es un algoritmo oficial: el Grupo de adopción puede decidir otra cosa si lo justifica.",n:1},
+ {t:"Un número no basta",p:"¿Por qué no decidir solo con la RCEI?",c:"Un umbral de coste por AVAC es un criterio único. La tecnología B lo supera y, con ese criterio, no se financia. Si se miran otros criterios, la discusión cambia, aunque la decisión final pueda ser la misma.",f:"Thokala P, et al. Value Health. 2016;19(1):1-13; Goetghebeur MM, et al. Med Decis Making. 2012;32(2):376-388. Datos ficticios.",n:2},
+ {t:"La hoja de puntuación",p:"¿Cambia la valoración según quién la haga?",c:"Puntuad el caso del estimulador del hipogloso de 0 a 3 en los cinco criterios de la hoja de la práctica. Después cambiad de papel: cada uno da pesos distintos a los criterios. Con las mismas puntuaciones, el total cambia.",f:"Hoja de puntuación de la práctica final (criterios simplificados de EVIDEM). Los pesos de cada papel son ilustrativos.",n:1},
+ {t:"Cómo se delibera",p:"¿Qué es un proceso deliberativo?",c:"Es el examen informado y crítico de una cuestión, sopesando argumentos y evidencia, para orientar una decisión. La guía de HTAi e ISPOR lo organiza en seis fases. La mesa aporta lo que los números no capturan.",f:"Oortwijn W, et al. Value Health. 2022;25(6):869-886.",n:2},
+ {t:"La sesión del Grupo de adopción",p:"¿Cómo será la fase 5?",c:"Veintidós minutos por caso. Dos equipos se reparten seis papeles y cada papel trae sus preguntas. Al defender la propuesta, decid también en qué nivel debería tomarse la decisión real.",f:"Enunciado de la práctica final, fase 5; tarjetas de papel del Grupo de adopción; RD 415/2026, disposición adicional primera.",n:3},
+ {t:"La propuesta del bloque 11",p:"¿Cómo se escribe una propuesta que se pueda defender?",c:"La casilla marcada en el bloque 11 es lo de menos. Lo que el Grupo de adopción va a discutir son las condiciones y los datos para reevaluar. Comparad dos versiones de la misma propuesta.",f:"Ficha de impacto, bloque 11; acta del Grupo de adopción, bloque 4. Caso ficticio.",n:2}
+];
+
+/* ---------- Árbol de la decisión ---------- */
+var P=[
+ {id:"uso",l:"1 · Situación",p:"¿La tecnología es nueva o ya se usa en el centro o en el sistema?",o:[["nueva","Nueva"],["uso","Ya se usa"]]},
+ {id:"bal",l:"2 · Balance",p:"En el desenlace principal, ¿qué balance entre beneficios y riesgos muestra la evidencia?",o:[["fav","Favorable"],["dud","Dudoso"],["nulo","Nulo o desfavorable"]]},
+ {id:"cer",l:"3 · Certeza",p:"¿Con qué certeza (GRADE)?",o:[["alta","Alta o moderada"],["baja","Baja o muy baja"]]},
+ {id:"red",l:"4 · Incertidumbre",p:"¿Se podría reducir la incertidumbre con datos en un plazo razonable (dos o tres años)?",o:[["si","Sí"],["no","No"]]},
+ {id:"dep",l:"5 · Contexto",p:"¿El balance depende de en quién, dónde o cómo se use (subgrupo, volumen, formación, infraestructura)?",o:[["si","Sí"],["no","No"]]}
+];
+var DECS={
+ no:{n:"No incorporar",c:"#8E2A2A",w:["Por qué el balance no compensa, con el verbo que corresponde a la certeza.","Qué evidencia nueva o qué cambio de precio justificaría volver a evaluarla."]},
+ si:{n:"Incorporar",c:"#25695C",w:["Cómo se seguirá el uso real (indicadores, registro).","Cuándo se revisará la decisión."]},
+ co:{n:"Incorporar con condiciones",c:"#1F6F78",w:["Condiciones que se puedan comprobar: subgrupo, volumen mínimo, centros, formación.","Qué indicador mostrará si se cumplen y quién lo vigila."]},
+ tu:{n:"Uso tutelado o estudio controlado",c:"#B4621B",w:["Centros, protocolo y duración.","Qué se mide y con qué comparación.","Qué resultado llevaría a incorporar y cuál a no incorporar."]},
+ de:{n:"Desinvertir",c:"#5B4E55",w:["Qué se deja de hacer y qué lo sustituye.","Cómo se explica a profesionales y pacientes, y cómo se comprueba que se ha retirado."]},
+ de2:{n:"Mantener con condiciones o desinvertir",c:"#5B4E55",w:["Si se mantiene, en qué pacientes y con qué datos se revisará.","Si se retira, qué la sustituye."]},
+ zona:{n:"Zona de deliberación",c:"#35577A",w:["La evidencia no decide sola: pesan la gravedad, las alternativas, el coste y la equidad.","Escribid qué criterio inclina vuestra propuesta y qué incertidumbre queda sin resolver."]}
+};
+function decidir(r){
+ if(!r.uso||!r.bal)return null;
+ if(r.bal==="nulo")return r.uso==="uso"?"de":"no";
+ if(!r.cer)return null;
+ if(r.bal==="fav"&&r.cer==="alta"){if(!r.dep)return null;return r.dep==="si"?"co":"si";}
+ if(!r.red)return null;
+ if(r.red==="si")return "tu";
+ if(r.bal==="dud")return r.uso==="uso"?"de2":"no";
+ if(!r.dep)return null;
+ return "zona";
+}
+function necesarias(r){
+ var n=["uso","bal"];if(r.bal&&r.bal!=="nulo"){n.push("cer");
+  if(r.bal==="fav"&&r.cer==="alta")n.push("dep");
+  else if(r.cer){n.push("red");if(r.red==="no"&&r.bal==="fav")n.push("dep");}}
+ return n;
+}
+var CASOS2=[
+ {n:"Armarios",r:{uso:"nueva",bal:"fav",cer:"baja",red:"si",dep:"si"},ex:"Hay razones para esperar beneficio, pero no hay una cifra de errores de partida. Instalarlos en dos plantas y medir los errores antes y después resolvería la duda en poco tiempo. La prescripción electrónica es condición previa."},
+ {n:"Tomosíntesis",r:{uso:"nueva",bal:"dud",cer:"baja",red:"si",dep:"si"},ex:"Detecta más, pero no se sabe si reduce los cánceres de intervalo. Un estudio controlado dentro del programa puede responderlo, con atención a las unidades móviles."},
+ {n:"Hipogloso",r:{uso:"nueva",bal:"fav",cer:"baja",red:"si",dep:"si"},ex:"Mejora la somnolencia con certeza baja en un grupo pequeño sin alternativa. Un registro de los pacientes implantados, en un centro con volumen suficiente, reduciría la incertidumbre."},
+ {n:"Adhesivo tisular",r:{uso:"nueva",bal:"fav",cer:"alta",red:"",dep:"no"},ex:"En este mundo simulado, cierra laceraciones simples con menos dolor que la sutura y el mismo resultado estético, con certeza moderada. No exige formación especial ni cambia el circuito."},
+ {n:"Ecografía en urgencias",r:{uso:"nueva",bal:"fav",cer:"alta",red:"",dep:"si"},ex:"En este mundo simulado, acelera el diagnóstico con certeza moderada, pero solo en manos de profesionales formados. La condición es una formación acreditada y un registro de exploraciones."},
+ {n:"Rx de tórax preoperatoria",r:{uso:"uso",bal:"nulo",cer:"alta",red:"",dep:"no"},ex:"En este mundo simulado, se pide a adultos sanos antes de cirugía menor y no cambia ni el manejo ni las complicaciones. Se usa por costumbre: es candidata a desinversión."}
+];
+var r2={},caso2=-1;
+function pintar2(){
+ var nec=necesarias(r2),h='<div><div class="lbl">Cargar un caso de práctica</div><div class="preset">';
+ CASOS2.forEach(function(c,i){h+='<button type="button" data-c2="'+i+'" aria-pressed="'+(i===caso2)+'">'+c.n+'</button>';});
+ h+='<button type="button" data-c2="-1">Limpiar</button></div>';
+ P.forEach(function(q){
+  var on=nec.indexOf(q.id)>=0;
+  h+='<div class="preg'+(on?'':' off')+'"><div class="lbl">'+q.l+'</div><p>'+q.p+'</p><div class="ops">';
+  q.o.forEach(function(o){h+='<button type="button" class="bt" data-q="'+q.id+'" data-v="'+o[0]+'" aria-pressed="'+(r2[q.id]===o[0])+'"'+(on?'':' disabled')+'>'+o[1]+'</button>';});
+  h+='</div></div>';
+ });
+ h+='</div><div class="res">';
+ var d=decidir(r2);
+ if(!d){h+='<div class="lbl">Decisión que encaja</div><div class="grande" style="color:var(--gris)">Faltan respuestas</div><p style="margin:0">Las preguntas en gris no hacen falta con las respuestas que habéis dado.</p>';}
+ else{var D=DECS[d];h+='<div class="lbl">Decisión que encaja</div><div class="grande" style="color:'+D.c+'">'+D.n+'</div><h4>Qué tenéis que escribir en el bloque 11</h4><ul>'+D.w.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ul>';}
+ if(caso2>=0){var c=CASOS2[caso2],dc=decidir(c.r);h+='<h4>Cómo lo vería la Oficina</h4><p style="margin:0">'+c.ex+' Decisión que encaja: <b>'+DECS[dc].n+'</b>.</p>';}
+ h+='<h4>Lo que el árbol no ve</h4><p style="margin:0">La gravedad de la enfermedad, si hay alternativas, el coste de oportunidad y la equidad. El Grupo de adopción puede llegar a otra decisión; si lo hace, el acta tiene que decir qué criterio pesó más.</p></div>';
+ document.getElementById("x2").innerHTML=h;
+}
+
+/* ---------- Hoja de puntuación ---------- */
+var CR=[["gr","Gravedad y necesidad no cubierta","Apnea grave sin alternativa para quien no tolera la CPAP"],["be","Beneficio clínico y certeza","Mejora la somnolencia; certeza baja"],["or","Impacto en la organización","Programa nuevo, dos cirujanos, volumen mínimo"],["eq","Equidad","Deja fuera a quien vive a más de una hora"],["co","Coste y sostenibilidad","28.000 € por paciente; RCEI de otro país"]];
+var PAP=[
+ ["Sin pesos",{gr:20,be:20,or:20,eq:20,co:20}],
+ ["CC. AA. con hospital de referencia",{gr:15,be:25,or:30,eq:10,co:20}],
+ ["CC. AA. sin hospital de referencia",{gr:15,be:20,or:10,eq:35,co:20}],
+ ["Profesional clínico",{gr:25,be:35,or:25,eq:5,co:10}],
+ ["Economista de la salud",{gr:15,be:25,or:10,eq:10,co:40}],
+ ["Representante de pacientes",{gr:35,be:25,or:5,eq:25,co:10}]
+];
+var pt={gr:3,be:2,or:1,eq:1,co:1},pap=0;
+function tot(w){var s=0;CR.forEach(function(c){s+=w[c[0]]*pt[c[0]]/3;});return Math.round(s);}
+function pintar4(){
+ var w=PAP[pap][1],h='<div><div class="lbl">Puntuación de 0 a 3 (estimulador del hipogloso, caso ficticio)</div>';
+ CR.forEach(function(c){
+  h+='<div class="crit"><b>'+c[1]+'<small>'+c[2]+'</small></b><div class="pts">';
+  for(var v=0;v<=3;v++)h+='<button type="button" data-cr="'+c[0]+'" data-v="'+v+'" aria-pressed="'+(pt[c[0]]===v)+'">'+v+'</button>';
+  h+='</div><span class="peso">peso '+w[c[0]]+' %</span></div>';
+ });
+ h+='<div class="fb neu" style="margin-top:4px">Una puntuación sin justificación no cuenta en la hoja de la práctica. Probad a defender en una frase cada número antes de cambiar de papel.</div></div>';
+ h+='<div><div class="lbl">Papel que valora</div><div class="papeles">'+PAP.map(function(p,i){return '<button type="button" data-pap="'+i+'" aria-pressed="'+(i===pap)+'">'+p[0]+'</button>';}).join("")+'</div>';
+ h+='<div class="total"><div class="lbl">Valoración ponderada (0 a 100)</div><div class="grande">'+tot(w)+'</div>';
+ CR.forEach(function(c){var v=w[c[0]]*pt[c[0]]/3;h+='<div class="contrib"><span>'+c[1].split(" ")[0]+(c[0]==="be"?" clínico":"")+'</span><div class="b" style="width:'+(v*2.4)+'%"></div><span>'+Math.round(v)+'</span></div>';});
+ h+='<div class="cmp"><div class="lbl" style="border:0;display:block;margin:4px 0 2px">Las mismas puntuaciones, según el papel</div>';
+ PAP.forEach(function(p,i){h+='<div'+(i===pap?' class="act"':'')+'><span>'+p[0]+'</span><span>'+tot(p[1])+'</span></div>';});
+ h+='</div></div><p style="font-size:13px;line-height:1.4;margin:8px 0 0">El número ordena la discusión, pero no decide. Si dos papeles llegan a totales distintos, la conversación útil es sobre los pesos: por qué a uno le importa más la equidad y a otro el coste.</p></div>';
+ document.getElementById("x4").innerHTML=h;
+}
+document.addEventListener("click",function(ev){
+ var b=ev.target.closest("button");if(!b)return;
+ if(b.closest("#x2")){
+  if(b.dataset.c2!==undefined){caso2=+b.dataset.c2;r2={};if(caso2>=0){var c=CASOS2[caso2].r;Object.keys(c).forEach(function(k){if(c[k])r2[k]=c[k];});var ne=necesarias(r2);Object.keys(r2).forEach(function(k){if(ne.indexOf(k)<0)delete r2[k];});}pintar2();return;}
+  if(b.dataset.q){r2[b.dataset.q]=b.dataset.v;var nec=necesarias(r2);Object.keys(r2).forEach(function(k){if(nec.indexOf(k)<0)delete r2[k];});pintar2();}
+  return;
+ }
+ if(b.closest("#x4")){
+  if(b.dataset.cr){pt[b.dataset.cr]=+b.dataset.v;pintar4();}
+  else if(b.dataset.pap!==undefined){pap=+b.dataset.pap;pintar4();}
+ }
+});
+document.addEventListener("DOMContentLoaded",function(){pintar2();pintar4();});
+
+</script>
+<script>
+(function(){
+  var escenas=window.ESCENAS,b=document.body,s=0,t=0,nav=document.querySelector("nav.puntos");
+  var $=function(id){return document.getElementById(id)};
+  escenas.forEach(function(e,i){
+    var bt=document.createElement("button");bt.type="button";bt.textContent=(i+1)+". "+e.t;
+    bt.addEventListener("click",function(ev){ev.stopPropagation();ir(i,0);});
+    nav.appendChild(bt);
+  });
+  function pintar(){
+    b.setAttribute("data-s",s);b.setAttribute("data-t",t);
+    var e=escenas[s];
+    $("num").textContent="Escena "+(s+1)+" de "+escenas.length;
+    $("tit").textContent=e.t;$("preg").textContent=e.p;$("cuerpo").textContent=e.c;$("fuente").textContent="Fuente: "+e.f;
+    $("paso").textContent=e.n>1?("Paso "+(t+1)+" de "+e.n):"";
+    $("ant").disabled=(s===0&&t===0);
+    $("sig").disabled=(s===escenas.length-1&&t===e.n-1);
+    nav.querySelectorAll("button").forEach(function(x,i){if(i===s)x.setAttribute("aria-current","step");else x.removeAttribute("aria-current");});
+    document.querySelectorAll("[data-at]").forEach(function(el){var p=el.getAttribute("data-at").split(":");el.classList.toggle("on",+p[0]===s&&t>=+p[1]);});
+    document.querySelectorAll(".esc").forEach(function(el,i){el.setAttribute("aria-hidden",i===s?"false":"true");if("inert" in el)el.inert=(i!==s);});
+    if(window.alPintar)window.alPintar(s,t);
+  }
+  function ir(ns,nt){s=Math.max(0,Math.min(escenas.length-1,ns));t=Math.max(0,Math.min(escenas[s].n-1,nt));pintar();}
+  function sig(){if(t<escenas[s].n-1){t++;pintar();}else if(s<escenas.length-1){ir(s+1,0);}}
+  function ant(){if(t>0){t--;pintar();}else if(s>0){ir(s-1,escenas[s-1].n-1);}}
+  window.irEscena=ir;
+  $("sig").addEventListener("click",function(ev){ev.stopPropagation();sig();});
+  $("ant").addEventListener("click",function(ev){ev.stopPropagation();ant();});
+  $("marco").addEventListener("click",function(ev){if(ev.target.closest(".int,button,select,input,a"))return;sig();});
+  document.addEventListener("keydown",function(ev){
+    var tg=ev.target,enCtl=tg&&tg.closest&&tg.closest("input,select,textarea,.int");
+    if(ev.key==="ArrowRight"||ev.key===" "||ev.key==="PageDown"||ev.key==="Enter"){if(enCtl||(tg.tagName==="BUTTON"&&ev.key!=="ArrowRight"))return;ev.preventDefault();sig();}
+    else if(ev.key==="ArrowLeft"||ev.key==="PageUp"){if(enCtl)return;ev.preventDefault();ant();}
+    else if(ev.key==="Home"){if(enCtl)return;ir(0,0);}
+    else if((ev.key==="f"||ev.key==="F")&&!enCtl){try{if(!document.fullscreenElement){document.documentElement.requestFullscreen().catch(function(){});}else{document.exitFullscreen();}}catch(e){}}
+  });
+  function escalar(){
+    var m=$("marco"),st=$("stage"),w=m.clientWidth,h=m.clientHeight;if(!w||!h)return;
+    var k=Math.min(w/1000,h/640)*0.96,x=(w-1000*k)/2,y=(h-640*k)/2;
+    st.style.transform="translate("+x+"px,"+y+"px) scale("+k+")";
+  }
+  window.addEventListener("resize",escalar);
+  if(window.ResizeObserver){new ResizeObserver(escalar).observe($("marco"));}
+  pintar();escalar();
+})();
+</script>
+</body>
+</html>

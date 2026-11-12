@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentación y difusión de la evaluación: el informe, la comunicación calibrada y la reevaluación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Granate UCLM para la estructura; ámbar para el bloque de impacto y decisión del Tema 1;
+     verde para lo correcto y rojo para lo que hay que revisar en los ejercicios. */
+  --granate:#A3002F; --granate-claro:#F7E4E9;
+  --verde:#25695C; --verde-claro:#E1EFEB;
+  --ambar:#B4621B; --ambar-claro:#F6EADF;
+  --rojo:#B3261E; --rojo-claro:#F8E1DF;
+  --pizarra:#35577A; --pizarra-claro:#E3EAF2;
+  --tinta:#2A2125; --gris:#6C6266; --linea:#DED6D9; --papel:#FFFFFF; --fondo:#F6F3F4;
+  --f-disp:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;
+  --f-cuerpo:"IBM Plex Sans",Arial,Helvetica,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--fondo);color:var(--tinta);font-family:var(--f-cuerpo);display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:20px;padding:12px 24px;background:var(--papel);border-bottom:1px solid var(--linea);flex-wrap:wrap}
+.volver{font:600 13px var(--f-cuerpo);color:var(--granate);text-decoration:none;border:1px solid var(--granate);border-radius:999px;padding:4px 11px}
+.volver:hover{background:var(--granate);color:#fff}
+.marca{font-family:var(--f-disp);font-weight:700;color:var(--granate);font-size:15px;letter-spacing:.02em}
+.marca span{color:var(--gris);font-weight:500}
+nav.puntos{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+nav.puntos button{font:500 13px var(--f-cuerpo);border:1px solid var(--linea);background:var(--papel);color:var(--gris);border-radius:999px;padding:5px 11px;cursor:pointer}
+nav.puntos button[aria-current="step"]{background:var(--granate);border-color:var(--granate);color:#fff}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--ambar);outline-offset:2px}
+main{flex:1;display:grid;grid-template-columns:minmax(280px,360px) 1fr;min-height:0}
+aside{padding:28px 26px 20px;display:flex;flex-direction:column;gap:12px;background:var(--papel);border-right:1px solid var(--linea);overflow:auto}
+.num{font-family:var(--f-disp);font-weight:600;color:var(--granate);font-size:15px;letter-spacing:.06em;text-transform:uppercase}
+aside h1{font-family:var(--f-disp);font-weight:700;font-size:38px;line-height:1.02;margin:0;text-wrap:balance}
+.pregunta{font-size:19px;font-style:italic;color:var(--granate);margin:0}
+.cuerpo{font-size:16px;line-height:1.55;margin:0;max-width:62ch}
+.fuente{font-size:12.5px;color:var(--gris);margin-top:auto;border-top:1px solid var(--linea);padding-top:10px;line-height:1.45}
+.ctl{display:flex;gap:8px;align-items:center}
+.ctl button{font:600 14px var(--f-cuerpo);border:1px solid var(--granate);background:var(--papel);color:var(--granate);border-radius:6px;padding:8px 14px;cursor:pointer}
+.ctl button.prim{background:var(--granate);color:#fff}
+.ctl button:disabled{opacity:.35;cursor:default}
+.ctl .paso{font-size:12.5px;color:var(--gris);margin-left:6px;font-variant-numeric:tabular-nums}
+.marco{position:relative;min-height:0;overflow:hidden;cursor:pointer}
+.stage{position:absolute;left:0;top:0;width:1000px;height:640px;transform-origin:0 0}
+.esc{position:absolute;left:0;top:0;width:1000px;height:640px;opacity:0;pointer-events:none;transition:opacity 500ms ease}
+.int{cursor:auto}
+.fade{opacity:0;transition:opacity 600ms ease,transform 600ms ease;transform:translateY(8px)}
+.fade.on{opacity:1;transform:none}
+.card{background:var(--papel);border:1px solid var(--linea);border-radius:10px;box-shadow:0 6px 20px rgba(60,20,30,.08);padding:16px 18px}
+.tipo{font:600 12px var(--f-cuerpo);letter-spacing:.08em;text-transform:uppercase;color:var(--gris)}
+.banda{position:absolute;left:30px;width:940px;padding:13px 18px;border-left:4px solid var(--granate);background:var(--papel);border-radius:0 8px 8px 0;font-size:15.5px;line-height:1.45}
+.banda.amb{border-left-color:var(--ambar)}
+.lbl{font:600 12px var(--f-cuerpo);letter-spacing:.08em;text-transform:uppercase;color:var(--gris);margin:0 0 6px}
+/* Pestañas de caso y botones de los ejercicios */
+.casos{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.casos .lbl{margin:0 6px 0 0}
+.casos button{font:600 13px var(--f-cuerpo);border:1px solid var(--ambar);background:var(--papel);color:var(--ambar);border-radius:999px;padding:4px 12px;cursor:pointer}
+.casos button[aria-pressed="true"]{background:var(--ambar);color:#fff}
+.bt{font:600 12.5px var(--f-cuerpo);border:1px solid var(--linea);background:var(--papel);color:var(--tinta);border-radius:999px;padding:4px 10px;cursor:pointer;white-space:nowrap}
+.bt:hover{border-color:var(--granate)}
+.bt[aria-pressed="true"]{background:var(--granate);border-color:var(--granate);color:#fff}
+.bt.ok{background:var(--verde);border-color:var(--verde);color:#fff}
+.bt.esp{box-shadow:inset 0 0 0 2px var(--verde);color:var(--verde)}
+.bt.mal{background:var(--rojo);border-color:var(--rojo);color:#fff}
+.acc{font:600 14px var(--f-cuerpo);border:1px solid var(--granate);background:var(--granate);color:#fff;border-radius:6px;padding:7px 14px;cursor:pointer}
+.acc.sec{background:var(--papel);color:var(--granate)}
+.acc:disabled{opacity:.4;cursor:default}
+.fb{border-radius:8px;padding:10px 14px;font-size:14.5px;line-height:1.45;background:var(--fondo);border-left:4px solid var(--gris)}
+.fb.ok{background:var(--verde-claro);border-left-color:var(--verde)}
+.fb.mal{background:var(--rojo-claro);border-left-color:var(--rojo)}
+.fb.neu{background:var(--ambar-claro);border-left-color:var(--ambar)}
+.fb b{font-weight:600}
+.marcador{font:600 13.5px var(--f-cuerpo);color:var(--gris)}
+.marcador b{color:var(--tinta)}
+
+/* Escena 1: productos */
+.prod{position:absolute;top:24px;width:224px;height:300px;border-radius:10px;background:var(--papel);border:1px solid var(--linea);border-top:5px solid var(--granate);padding:13px 14px;font-size:14px;line-height:1.42;display:flex;flex-direction:column;gap:6px}
+.prod h3{margin:0;font:700 21px/1.1 var(--f-disp)}
+.prod .q{font:600 11.5px var(--f-cuerpo);letter-spacing:.07em;text-transform:uppercase;color:var(--gris)}
+.prod .ext{margin-top:auto;font:700 15px var(--f-disp);color:var(--granate)}
+/* Escena 2: ordenar */
+.ord{position:absolute;left:24px;top:14px;width:952px;height:612px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.pz{display:block;width:100%;text-align:left;font:500 14.5px/1.35 var(--f-cuerpo);color:var(--tinta);background:var(--papel);border:1px solid var(--linea);border-radius:8px;padding:9px 12px;margin-bottom:7px;cursor:pointer}
+.pz:hover{border-color:var(--granate)}
+.pz:disabled{opacity:.3;cursor:default}
+.hueco{display:grid;grid-template-columns:30px 1fr;gap:8px;align-items:center;min-height:42px;border:1px dashed var(--linea);border-radius:8px;padding:6px 10px;margin-bottom:7px;font-size:14px;line-height:1.35;background:rgba(255,255,255,.5)}
+.hueco b{font:700 18px var(--f-disp);color:var(--gris)}
+.hueco.lleno{border-style:solid;background:var(--papel)}
+.hueco.ok{border-color:var(--verde);background:#F6FBF9}
+.hueco.mal{border-color:var(--rojo);background:#FDF5F4}
+.hueco small{display:block;color:var(--gris);font-size:12.5px}
+/* Escena 3: qué se publica */
+.pub{position:absolute;width:455px;border-radius:10px;background:var(--papel);border:1px solid var(--linea);padding:12px 15px;font-size:14.2px;line-height:1.42}
+.pub b{display:block;font:700 18px/1.15 var(--f-disp);margin-bottom:3px}
+.pub .art{display:block;margin-top:5px;font:600 12px var(--f-cuerpo);color:var(--gris)}
+.pub.pac{border-left:4px solid var(--ambar)}
+.pub.trans{border-left:4px solid var(--granate)}
+/* Escena 4: verbos */
+table.verbos{position:absolute;left:30px;top:24px;width:940px;border-collapse:separate;border-spacing:0;background:var(--papel);border:1px solid var(--linea);border-radius:10px;overflow:hidden}
+table.verbos th{font:600 12px var(--f-cuerpo);letter-spacing:.07em;text-transform:uppercase;color:var(--gris);text-align:left;padding:10px 14px;background:var(--fondo)}
+table.verbos td{font-size:16px;padding:12px 14px;border-top:1px solid var(--linea)}
+table.verbos td:first-child{font:700 17px var(--f-disp);color:#fff;width:150px}
+.c4{background:#1E783C}.c3{background:#14787F}.c2{background:#BE7800}.c1{background:#AF2323}
+/* Escenas 5 a 7: ejercicios */
+.ejer{position:absolute;left:24px;top:14px;width:952px;height:612px;display:flex;flex-direction:column;gap:9px}
+.enun{background:var(--papel);border:1px solid var(--linea);border-left:4px solid var(--ambar);border-radius:0 8px 8px 0;padding:10px 14px;font-size:15px;line-height:1.45}
+.enun .lbl{margin-bottom:3px}
+.opc{display:block;width:100%;text-align:left;font:400 15px/1.4 var(--f-cuerpo);color:var(--tinta);background:var(--papel);border:1px solid var(--linea);border-radius:8px;padding:9px 14px;cursor:pointer}
+.opc:hover{border-color:var(--granate)}
+.opc.ok{border:2px solid var(--verde);background:#F6FBF9}
+.opc.mal{border:2px solid var(--rojo);background:#FDF5F4}
+.nav5{display:flex;gap:6px;align-items:center}
+.nav5 button{width:34px;height:30px;font:600 14px var(--f-cuerpo);border:1px solid var(--linea);background:var(--papel);border-radius:6px;cursor:pointer}
+.nav5 button[aria-current="step"]{border-color:var(--granate);color:var(--granate);box-shadow:inset 0 0 0 1px var(--granate)}
+.nav5 button.hecho{background:var(--verde-claro)}
+.aud{display:grid;grid-template-columns:1fr 250px;gap:12px;align-items:center;background:var(--papel);border:1px solid var(--linea);border-radius:8px;padding:10px 14px}
+.aud p{margin:0;font-size:14.2px;line-height:1.45}
+.aud .ops{display:flex;flex-direction:column;gap:4px}
+.aud.ok{border-color:var(--verde)} .aud.mal{border-color:var(--rojo)}
+.parr{background:var(--papel);border:1px solid var(--linea);border-radius:10px;padding:16px 20px;font-size:16px;line-height:1.75}
+.fr{cursor:pointer;border-radius:4px;padding:1px 2px;transition:background 200ms}
+.fr:hover{background:var(--fondo)}
+.fr.marcada{background:var(--ambar-claro);box-shadow:inset 0 -2px 0 var(--ambar)}
+.fr.ok{background:var(--verde-claro);box-shadow:inset 0 -2px 0 var(--verde)}
+.fr.mal{background:var(--rojo-claro);box-shadow:inset 0 -2px 0 var(--rojo)}
+.fr.falta{box-shadow:inset 0 -2px 0 var(--rojo)}
+.fr sup{font-size:11px;color:var(--granate);font-weight:600}
+.expl{display:flex;flex-direction:column;gap:6px;font-size:13.8px;line-height:1.42}
+.expl div{border-radius:6px;padding:6px 10px;background:var(--fondo)}
+.expl b{font-weight:600}
+/* Escena 8: después de decidir */
+.ciclo{position:absolute;top:30px;width:224px;height:220px;border-radius:10px;background:var(--papel);border:1px solid var(--linea);padding:13px 14px;font-size:14px;line-height:1.42}
+.ciclo .n{font:700 13px var(--f-cuerpo);letter-spacing:.07em;text-transform:uppercase;color:var(--ambar)}
+.ciclo b{display:block;font:700 20px/1.1 var(--f-disp);margin:3px 0 6px}
+.ciclo .art{display:block;margin-top:6px;font:600 12px var(--f-cuerpo);color:var(--gris)}
+.vuelta{position:absolute;left:30px;top:262px;width:940px;height:34px;border:2px solid var(--ambar);border-top:0;border-radius:0 0 14px 14px}
+.vuelta span{position:absolute;left:50%;bottom:-12px;transform:translateX(-50%);background:var(--fondo);padding:0 10px;font:600 13px var(--f-cuerpo);color:var(--ambar)}
+
+[data-s="0"] #e0,[data-s="1"] #e1,[data-s="2"] #e2,[data-s="3"] #e3,[data-s="4"] #e4,[data-s="5"] #e5,[data-s="6"] #e6,[data-s="7"] #e7{opacity:1;pointer-events:auto}
+@media (max-width:900px){
+  main{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  aside{border-right:0;border-bottom:1px solid var(--linea);padding:18px 16px}
+  aside h1{font-size:30px}
+  .marco{min-height:66vw}
+  header{padding:10px 16px}
+}
+@media (prefers-reduced-motion:reduce){*{transition-duration:1ms !important}}
+</style>
+</head>
+<body data-s="0" data-t="0">
+<header>
+  <a class="volver" href="../../index.html">← Colección</a>
+  <div class="marca">Tema 1 · Impacto y decisión <span>· Documentación y difusión (informe de la fase 4 y defensa en la fase 5)</span></div>
+  <nav class="puntos" aria-label="Escenas"></nav>
+</header>
+<main>
+  <aside aria-live="polite">
+    <div class="num" id="num">Escena 1</div>
+    <h1 id="tit"></h1>
+    <p class="pregunta" id="preg"></p>
+    <p class="cuerpo" id="cuerpo"></p>
+    <div class="ctl">
+      <button type="button" id="ant">← Anterior</button>
+      <button type="button" id="sig" class="prim">Siguiente →</button>
+      <span class="paso" id="paso"></span>
+    </div>
+    <div class="fuente" id="fuente"></div>
+  </aside>
+  <div class="marco" id="marco" role="region" aria-label="Documentación y difusión de una evaluación de tecnologías sanitarias, con ejercicios de comunicación calibrada">
+    <div class="stage" id="stage">
+
+<!-- 1. Un informe, varias audiencias -->
+<div class="esc" id="e0">
+  <div class="prod" style="left:30px"><span class="q">Para el equipo técnico</span><h3>Informe completo</h3>Pregunta, métodos, resultados por desenlace, certeza, impacto e incertidumbres. Es lo que se puede auditar.<span class="ext">Decenas de páginas</span></div>
+  <div class="prod" style="left:268px"><span class="q">Para quien decide</span><h3>Resumen ejecutivo</h3>El mensaje principal con su certeza, lo que cambia en el sistema, el dato económico y lo que queda sin saber.<span class="ext">Media página</span></div>
+  <div class="prod" style="left:506px"><span class="q">Para pacientes y ciudadanía</span><h3>Material informativo</h3>Qué es la tecnología, para quién puede servir, qué se sabe y qué no, en lenguaje llano y sin perder la incertidumbre.<span class="ext">Una o dos páginas</span></div>
+  <div class="prod" style="left:744px"><span class="q">Para el registro público</span><h3>Valoración y acta</h3>La decisión, los criterios que pesaron, los desacuerdos y las condiciones para reevaluar.<span class="ext">Lo que redacta la secretaría</span></div>
+  <div class="banda fade" data-at="0:1" style="top:350px">Cambian la extensión, el vocabulario y el formato. La certeza no cambia. Un resumen para pacientes que dice «funciona» cuando el informe dice «puede mejorar, con certeza baja» no es una simplificación: es otro mensaje.</div>
+  <div class="banda amb fade" data-at="0:1" style="top:452px">El informe de protonterapia de AQuAS y RedETS (2024) incluye un resumen estructurado además del cuerpo técnico. En la práctica final, el informe de la Oficina tiene un resumen ejecutivo de media página como máximo, y el acta la redacta la secretaría del Grupo de adopción.</div>
+</div>
+
+<!-- 2. Ordenar el informe -->
+<div class="esc" id="e1"><div class="ord int" id="x1"></div></div>
+
+<!-- 3. Qué se publica -->
+<div class="esc" id="e2">
+  <div class="pub trans" style="left:30px;top:24px"><b>Los informes de evaluación son públicos</b>Las Oficinas los publican según el procedimiento que fijen sus instrucciones.<span class="art">RD 415/2026, art. 16.1</span></div>
+  <div class="pub trans" style="left:515px;top:24px"><b>También la valoración del Grupo de adopción</b>El Ministerio de Sanidad publica la valoración final; para los medicamentos, dentro de un informe público de financiación.<span class="art">RD 415/2026, art. 16.2</span></div>
+  <div class="pub trans" style="left:30px;top:150px"><b>Sin la información confidencial</b>Se suprime lo confidencial, pero la confidencialidad no impide publicar las decisiones de los órganos colegiados.<span class="art">RD 415/2026, art. 16.3</span></div>
+  <div class="pub trans" style="left:515px;top:150px"><b>Quién participa y qué se dijo</b>Son públicos los listados de miembros y participantes y las actas de los órganos colegiados, sin las referencias confidenciales.<span class="art">RD 415/2026, art. 26</span></div>
+  <div class="pub pac fade" data-at="2:1" style="left:30px;top:290px"><b>Pacientes y personas cuidadoras</b>Su participación en la ETS se garantiza de forma sistemática, con una metodología que publica el Ministerio.<span class="art">RD 415/2026, art. 25</span></div>
+  <div class="pub pac fade" data-at="2:1" style="left:515px;top:290px"><b>Comentarios a los proyectos de informe</b>Pacientes y cuidadores pueden comentar los proyectos de informe, sin que eso amplíe los plazos.<span class="art">RD 415/2026, art. 14.4</span></div>
+  <div class="banda fade" data-at="2:1" style="top:430px">Si el informe va a ser público, cada afirmación tiene que poder rastrearse hasta su fuente. Es la misma razón por la que en la práctica marcáis con [IA] lo que viene de Copilot y lo comprobáis en la tabla de verificación.</div>
+</div>
+
+<!-- 4. Verbos -->
+<div class="esc" id="e3">
+  <table class="verbos">
+    <tr><th>Certeza</th><th>Si hay un efecto importante</th><th>Si el efecto es nulo o pequeño</th></tr>
+    <tr><td class="c4">Alta</td><td>X <b>reduce</b> Y</td><td>X <b>supone poca o ninguna diferencia</b> en Y</td></tr>
+    <tr><td class="c3">Moderada</td><td>X <b>probablemente reduce</b> Y</td><td>X <b>probablemente supone poca o ninguna diferencia</b> en Y</td></tr>
+    <tr><td class="c2">Baja</td><td>X <b>puede reducir</b> Y</td><td>X <b>puede suponer poca o ninguna diferencia</b> en Y</td></tr>
+    <tr><td class="c1">Muy baja</td><td colspan="2"><b>No se sabe si</b> X reduce Y: la evidencia es muy incierta</td></tr>
+  </table>
+  <div class="banda fade" data-at="3:1" style="top:330px">El verbo lleva la certeza dentro. Así el lector no necesita saber qué es GRADE para entender cuánto puede fiarse. Y sirve igual para «aumenta», «mejora» o «empeora».</div>
+  <div class="banda amb fade" data-at="3:1" style="top:430px">Los dos errores simétricos: sobreafirmar («funciona», «es eficaz» con certeza baja) e infraafirmar («no hay evidencia suficiente» cuando la certeza es moderada y el efecto, claro). Los dos confunden a quien decide.</div>
+</div>
+
+<!-- 5. Calibrador -->
+<div class="esc" id="e4"><div class="ejer int" id="x4"></div></div>
+<!-- 6. Tres audiencias -->
+<div class="esc" id="e5"><div class="ejer int" id="x5"></div></div>
+<!-- 7. Revisar el párrafo -->
+<div class="esc" id="e6"><div class="ejer int" id="x6"></div></div>
+
+<!-- 8. Después de decidir -->
+<div class="esc" id="e7">
+  <div class="ciclo" style="left:30px"><span class="n">Implantar</span><b>Aplicar la decisión</b>Compras, formación, protocolos. Las condiciones del bloque 11 se convierten en requisitos.</div>
+  <div class="ciclo" style="left:268px"><span class="n">Seguir</span><b>Medir el uso real</b>Registros, seguimiento clínico poscomercialización del fabricante, indicadores del hospital.<span class="art">MDR, seguimiento poscomercialización</span></div>
+  <div class="ciclo" style="left:506px"><span class="n">Revisar</span><b>Proponer la reevaluación</b>Por cambios en la evidencia, en las condiciones económicas o por innovación incremental.<span class="art">RD 415/2026, art. 17.1</span></div>
+  <div class="ciclo" style="left:744px"><span class="n">Reevaluar</span><b>Cincuenta días</b>Si cambia sustancialmente, el Grupo puede concluir otra cosa, incluida la desinversión o un piloto con datos de la vida real.<span class="art">RD 415/2026, arts. 14.2.e y 17.3</span></div>
+  <div class="vuelta"><span>vuelta al ciclo de la ETS</span></div>
+  <div class="banda fade" data-at="7:1" style="top:330px">El Reglamento (UE) 2025/327 del Espacio Europeo de Datos de Salud creará un marco común para usar datos sanitarios en investigación y evaluación. Se aplicará por fases a partir de 2029. Los datos de la vida real ayudan, pero arrastran los sesgos de los estudios observacionales: confusión por indicación y selección.</div>
+  <div class="banda amb fade" data-at="7:1" style="top:450px">La protonterapia lo ilustra: una decisión de cartera en 2020, un informe en 2024 y la recomendación de un registro nacional que alimente la próxima reevaluación. Difundir el informe no cierra la evaluación, sino que prepara la siguiente.</div>
+</div>
+
+    </div>
+  </div>
+</main>
+<script>
+
+window.ESCENAS=[
+ {t:"Un informe, varias audiencias",p:"¿Se comunica igual a todo el mundo?",c:"Una evaluación produce varios documentos, cada uno para un lector distinto. La regla común es que ninguno puede decir más, ni menos, de lo que permite la evidencia.",f:"Tema 1, apartado de comunicación y difusión; Moltó-Puigmartí C, et al. La protonterapia en el tratamiento del cáncer. AQuAS; RedETS; 2024.",n:2},
+ {t:"La estructura del informe",p:"¿En qué orden se cuenta una evaluación?",c:"El informe de la Oficina tiene ocho apartados en un orden fijo. Pulsad las piezas de la izquierda en el orden en que deberían aparecer. Si os equivocáis, la pieza vuelve a su sitio y os dice por qué.",f:"Enunciado de la práctica final, fase 4.",n:1},
+ {t:"Qué se publica",p:"¿Quién puede leer la evaluación?",c:"El Real Decreto 415/2026 hace públicos los informes, la valoración del Grupo de adopción, las actas y la lista de quienes participan. Y garantiza la participación de pacientes también en la fase de redacción.",f:"Real Decreto 415/2026, arts. 14.4, 16, 25 y 26 (BOE núm. 131, de 29 de mayo de 2026).",n:2},
+ {t:"El verbo según la certeza",p:"¿Cómo se dice lo que se sabe?",c:"GRADE propone frases tipo para cada nivel de certeza. Son las mismas que usáis en el bloque 7 de la ficha de evidencia y en el resumen ejecutivo del informe.",f:"Santesso N, et al. GRADE guidelines 26. J Clin Epidemiol. 2020;119:126-135.",n:2},
+ {t:"Calibrar el mensaje",p:"¿Qué frase corresponde a cada resultado?",c:"Cinco resultados ficticios de los casos de práctica. Para cada uno, elegid la frase que pondríais en el resumen ejecutivo.",f:"Resultados ficticios. Criterio: Santesso N, et al. 2020.",n:1},
+ {t:"La misma conclusión, tres lectores",p:"¿Para quién está escrita cada versión?",c:"Tres versiones de una misma conclusión sobre el estimulador del hipogloso, con resultados ficticios. Asignad a cada una su lector y fijaos en lo que se conserva en las tres.",f:"Caso ficticio. Tema 1, apartado de comunicación calibrada.",n:1},
+ {t:"Revisar antes de publicar",p:"¿Qué frases no pasarían una revisión?",c:"Un resumen ejecutivo sobre la tomosíntesis, escrito por un equipo con ayuda de la IA. Marcad las frases que no se sostienen y comprobad. Es el mismo trabajo que haréis con la tabla de verificación del cuaderno de IA.",f:"Caso ficticio. Cuaderno de IA de la práctica final.",n:1},
+ {t:"Después de decidir",p:"¿Se acaba la evaluación con el informe?",c:"No. La decisión se aplica, se sigue y se revisa cuando cambia la evidencia o el contexto. El Real Decreto 415/2026 regula cuándo y cómo se reevalúa.",f:"RD 415/2026, arts. 14.2.e, 17.1 y 17.3; Reglamento (UE) 2025/327; Tema 1.",n:2}
+];
+
+/* ---------- Ordenar el informe ---------- */
+var SEC=[
+ ["Resumen ejecutivo","Va primero porque es lo único que leerá parte de los destinatarios. Media página como máximo."],
+ ["Descripción de la tecnología, finalidad prevista y marco regulatorio","Antes de evaluar hay que saber qué es exactamente el producto y para qué lo declara su fabricante."],
+ ["Pregunta de evaluación","La pregunta, sellada antes de ver los estudios, delimita todo lo que viene después."],
+ ["Síntesis de la evidencia clínica y certeza","Responde a la pregunta con los estudios incluidos y su certeza GRADE."],
+ ["El dato económico, interpretado","Cinco líneas como máximo: no se recalcula, se interpreta."],
+ ["Impacto en el proceso, la organización, la calidad de vida, la equidad y los aspectos éticos y legales","Lo que la evidencia clínica no dice: el mapa de impacto, redactado."],
+ ["Incertidumbres y lo que no se sabe","Va antes de la propuesta porque la justifica: de aquí salen las condiciones."],
+ ["Propuesta de decisión, condiciones y datos para la reevaluación","Cierra el informe y recoge todo lo anterior."]
+];
+var MEZ=[5,2,7,0,3,6,1,4],ord=[],err=-1;
+function pintar1(){
+ var h='<div><div class="lbl">Piezas del informe</div>';
+ MEZ.forEach(function(i){h+='<button type="button" class="pz" data-pz="'+i+'"'+(ord.indexOf(i)>=0?' disabled':'')+'>'+SEC[i][0]+'</button>';});
+ h+='<button type="button" class="acc sec" id="re1" style="margin-top:6px">Empezar de nuevo</button></div><div><div class="lbl">Informe de la Oficina (cuatro páginas como máximo)</div>';
+ for(var k=0;k<8;k++){var i=ord[k];h+='<div class="hueco'+(i!==undefined?' lleno ok':'')+'"><b>'+(k+1)+'</b><span>'+(i!==undefined?SEC[i][0]+'<small>'+SEC[i][1]+'</small>':'')+'</span></div>';}
+ if(err>=0)h+='<div class="fb mal"><b>«'+SEC[err][0]+'» no va en el lugar '+(ord.length+1)+'.</b> '+SEC[err][1]+'</div>';
+ else if(ord.length===8)h+='<div class="fb ok"><b>Orden correcto.</b> Los anexos van detrás: las fichas de las fases 1 a 3 y el cuaderno de IA.</div>';
+ h+='</div>';
+ document.getElementById("x1").innerHTML=h;
+}
+/* La columna derecha solo muestra la explicación de las tres últimas piezas para no desbordar */
+function pintar1b(){pintar1();var hs=document.querySelectorAll("#x1 .hueco small");hs.forEach(function(s,i){if(i<hs.length-2&&ord.length>2)s.style.display="none";});}
+
+/* ---------- Calibrador ---------- */
+var CAL=[
+ {r:"Estimulador del hipogloso. Somnolencia diurna a 12 meses: mejora importante. Certeza baja.",o:["El estimulador mejora la somnolencia diurna.","El estimulador puede mejorar la somnolencia diurna.","No se sabe si el estimulador mejora la somnolencia diurna.","No hay evidencia de que el estimulador mejore la somnolencia."],k:1,fb:"Certeza baja con efecto importante: «puede mejorar». «Mejora» sobreafirma; «no hay evidencia» infraafirma, porque sí la hay, aunque débil."},
+ {r:"Tomosíntesis. Cánceres detectados por cada 1.000 mujeres: aumento importante. Certeza moderada.",o:["La tomosíntesis probablemente aumenta la detección de cáncer.","La tomosíntesis aumenta la detección y mejora la supervivencia.","La tomosíntesis puede aumentar la detección de cáncer.","La tomosíntesis aumenta la detección de cáncer."],k:0,fb:"Certeza moderada: «probablemente aumenta». La segunda opción salta a otro desenlace (supervivencia) que no se ha medido."},
+ {r:"Tomosíntesis. Cánceres de intervalo: efecto incierto. Certeza muy baja.",o:["La tomosíntesis no reduce los cánceres de intervalo.","La tomosíntesis puede reducir los cánceres de intervalo.","No se sabe si la tomosíntesis reduce los cánceres de intervalo: la evidencia es muy incierta.","La tomosíntesis probablemente supone poca o ninguna diferencia en los cánceres de intervalo."],k:2,fb:"Con certeza muy baja no se afirma nada en ningún sentido. «No reduce» es tan injustificado como «reduce»."},
+ {r:"Adhesivo tisular. Resultado estético de la cicatriz a 3 meses: sin diferencias. Certeza alta.",o:["No se sabe si el adhesivo cambia el resultado estético.","El adhesivo supone poca o ninguna diferencia en el resultado estético.","El adhesivo puede suponer poca o ninguna diferencia en el resultado estético.","No hay pruebas de que el adhesivo sea mejor que la sutura."],k:1,fb:"Certeza alta de que no hay diferencia importante: se dice sin rodeos. «No hay pruebas de que sea mejor» confunde ausencia de efecto con ausencia de evidencia."},
+ {r:"Radiografía de tórax preoperatoria. Complicaciones posoperatorias: sin diferencias. Certeza moderada.",o:["La radiografía preoperatoria es inútil.","La radiografía preoperatoria puede suponer poca o ninguna diferencia en las complicaciones.","La radiografía preoperatoria probablemente supone poca o ninguna diferencia en las complicaciones.","La radiografía preoperatoria no reduce las complicaciones."],k:2,fb:"Certeza moderada, sin efecto: «probablemente supone poca o ninguna diferencia». «Inútil» es un juicio que va más allá del desenlace medido."}
+];
+var ci=0,cr={};
+function pintar4(){
+ var c=CAL[ci],sel=cr[ci],h='<div class="cabej" style="display:flex;justify-content:space-between;align-items:center"><div class="nav5"><span class="lbl" style="margin:0 6px 0 0">Resultado</span>';
+ CAL.forEach(function(x,i){h+='<button type="button" data-ci="'+i+'"'+(i===ci?' aria-current="step"':'')+' class="'+(cr[i]===CAL[i].k?'hecho':'')+'">'+(i+1)+'</button>';});
+ var ac=0;CAL.forEach(function(x,i){if(cr[i]===x.k)ac++;});
+ h+='</div><span class="marcador"><b>'+ac+' de 5</b> bien calibrados</span></div><div class="enun"><div class="lbl">Resultado de la síntesis (ficticio)</div>'+c.r+'</div><div class="lbl" style="margin:4px 0 0">Frase para el resumen ejecutivo</div>';
+ c.o.forEach(function(o,i){var cl="opc";if(sel!==undefined&&i===sel)cl+=i===c.k?" ok":" mal";h+='<button type="button" class="'+cl+'" data-op="'+i+'">'+o+'</button>';});
+ if(sel!==undefined)h+='<div class="fb '+(sel===c.k?"ok":"mal")+'"><b>'+(sel===c.k?"Bien calibrada.":"No es esa.")+'</b> '+c.fb+'</div>'+(ci<4?'<div><button type="button" class="acc" data-ci="'+(ci+1)+'">Siguiente resultado →</button></div>':'');
+ else h+='<div class="fb">Fijaos en dos cosas: si el efecto es importante o nulo, y el nivel de certeza. La tabla de la escena anterior da el verbo.</div>';
+ document.getElementById("x4").innerHTML=h;
+}
+
+/* ---------- Tres audiencias ---------- */
+var AUD=["Cuerpo técnico del informe","Resumen para gestores","Material para pacientes"];
+var VER=[
+ {t:"Si no se adapta a la mascarilla de CPAP, este implante puede ayudarle a tener menos sueño durante el día. Todavía hay pocos estudios y no permiten asegurarlo. Hace falta una operación y varias visitas para ajustarlo.",k:2,fb:"Lenguaje llano y en segunda persona. Conserva la incertidumbre («puede», «no permiten asegurarlo») y cuenta lo que supone para el paciente."},
+ {t:"En adultos con apnea obstructiva moderada o grave que no toleran la CPAP, la estimulación del nervio hipogloso puede reducir la somnolencia diurna a 12 meses (diferencia de medias en la escala de Epworth −4,2 puntos; IC 95 %: −6,0 a −2,4; certeza baja por riesgo de sesgo e imprecisión).",k:0,fb:"Población, desenlace, plazo, estimación con su intervalo y motivos de la certeza: todo lo necesario para que otro equipo lo pueda comprobar."},
+ {t:"Puede mejorar la somnolencia, con certeza baja, en un grupo reducido de pacientes que no toleran la CPAP. Exige un implante de unos 28.000 € por paciente, dos cirujanos formados y unos 20 implantes al año para mantener el soporte del proveedor.",k:1,fb:"Mensaje calibrado en una línea y, a continuación, lo que importa para gestionar: coste, personal y volumen."}
+];
+var ar={},achk=0;
+function pintar5(){
+ var h='<div class="enun"><div class="lbl">Conclusión común (resultados ficticios)</div>El estimulador del nervio hipogloso puede reducir la somnolencia diurna en adultos que no toleran la CPAP, con evidencia de certeza baja.</div>';
+ VER.forEach(function(v,i){
+  var cl="aud";if(achk)cl+=ar[i]===v.k?" ok":" mal";
+  h+='<div class="'+cl+'"><div><p>'+v.t+'</p>'+(achk?'<p style="margin-top:5px;font-size:13px;color:'+(ar[i]===v.k?'var(--verde)':'var(--rojo)')+'"><b>'+AUD[v.k]+'.</b> '+v.fb+'</p>':'')+'</div><div class="ops">';
+  AUD.forEach(function(a,j){var c2="bt";if(achk&&ar[i]===j)c2+=j===v.k?" ok":" mal";h+='<button type="button" class="'+c2+'" data-v5="'+i+'" data-a="'+j+'" aria-pressed="'+(ar[i]===j)+'">'+a+'</button>';});
+  h+='</div></div>';
+ });
+ var n=Object.keys(ar).length;
+ h+='<div style="display:flex;gap:10px;align-items:center"><div class="fb '+(achk?"neu":"")+'" style="flex:1">'+(achk?'Lo que no cambia en ninguna de las tres: el verbo «puede», que es el que marca la certeza baja.':'Asignad un lector a cada versión y comprobad.')+'</div>'+(achk?'<button type="button" class="acc sec" id="re5">Empezar de nuevo</button>':'<button type="button" class="acc" id="ck5"'+(n<3?' disabled':'')+'>Comprobar</button>')+'</div>';
+ document.getElementById("x5").innerHTML=h;
+}
+
+/* ---------- Revisar el párrafo ---------- */
+var FR=[
+ {t:"La tomosíntesis probablemente aumenta la detección de cáncer en el cribado (certeza moderada).",m:0,ex:"Bien calibrada: verbo y certeza coinciden."},
+ {t:"Por tanto, reduce la mortalidad por cáncer de mama.",m:1,ex:"Sobreafirmación y salto de desenlace: la mortalidad no se ha medido y detectar más no equivale a reducirla."},
+ {t:"Un metaanálisis reciente demuestra una reducción de la mortalidad del 30 %.<sup>[IA]</sup>",m:1,ex:"Afirmación marcada como procedente de la IA, sin autor, revista ni año. Si no se encuentra en una fuente comprobable, va a la tabla de verificación como descartada."},
+ {t:"Leer cada estudio exige el doble de tiempo de radiólogo: unos 90 segundos frente a 45.",m:0,ex:"Dato del dossier, con su magnitud."},
+ {t:"Las unidades móviles no admiten el equipo, de modo que las mujeres de los municipios pequeños seguirían con la técnica actual.",m:0,ex:"Impacto en equidad, con su causa concreta."},
+ {t:"El sobrediagnóstico no es un problema relevante en este programa.",m:1,ex:"Afirmación sin dato: el dossier dice justo lo contrario, que no se sabe cuánto sobrediagnóstico añade. Debería ir en incertidumbres."}
+];
+var fm={},fchk=0,fsel=-1;
+function pintar6(){
+ var h='<div class="enun"><div class="lbl">Borrador de resumen ejecutivo · tomosíntesis en el cribado (caso ficticio)</div>Pulsad las frases que no pasarían una revisión. Hay más de una.</div><div class="parr">';
+ FR.forEach(function(f,i){var cl="fr";if(fchk){if(fm[i])cl+=f.m?" ok":" mal";else if(f.m)cl+=" falta";}else if(fm[i])cl+=" marcada";h+='<span class="'+cl+'" data-fr="'+i+'" role="button" tabindex="0">'+f.t+'</span> ';});
+ h+='</div>';
+ var n=0,ac=0;FR.forEach(function(f,i){if(fm[i])n++;if(!!fm[i]===!!f.m)ac++;});
+ if(fchk){
+  h+='<div class="expl">';
+  FR.forEach(function(f,i){if(f.m||fm[i])h+='<div><b>'+(f.m?(fm[i]?"Bien detectada":"Se os ha escapado"):"No tenía problema")+':</b> «'+f.t.replace(/<sup>.*<\/sup>/,"")+'» '+f.ex+'</div>';});
+  h+='</div><div style="display:flex;gap:10px;align-items:center"><div class="fb '+(ac===6?"ok":"neu")+'" style="flex:1"><b>'+ac+' de 6 frases bien juzgadas.</b> Detrás de cada error hay una pregunta de revisión: ¿se midió ese desenlace?, ¿dónde está la fuente?, ¿lo dice el dossier?</div><button type="button" class="acc sec" id="re6">Empezar de nuevo</button></div>';
+ }else{
+  h+='<div style="display:flex;gap:10px;align-items:center"><div class="fb" style="flex:1">'+n+' frases marcadas. Para cada una, preguntaos si el desenlace se midió, si la fuente existe y si el dossier la respalda.</div><button type="button" class="acc" id="ck6"'+(n<1?' disabled':'')+'>Comprobar</button></div>';
+ }
+ document.getElementById("x6").innerHTML=h;
+}
+
+document.addEventListener("click",function(ev){
+ var b=ev.target.closest("button");
+ if(ev.target.closest("#x1")&&b){
+  if(b.id==="re1"){ord=[];err=-1;pintar1b();return;}
+  if(b.dataset.pz!==undefined){var i=+b.dataset.pz;if(i===ord.length){ord.push(i);err=-1;}else{err=i;}pintar1b();}
+  return;
+ }
+ if(ev.target.closest("#x4")&&b){
+  if(b.dataset.ci!==undefined){ci=+b.dataset.ci;pintar4();return;}
+  if(b.dataset.op!==undefined){cr[ci]=+b.dataset.op;pintar4();}
+  return;
+ }
+ if(ev.target.closest("#x5")&&b){
+  if(b.id==="ck5"){achk=1;pintar5();return;}
+  if(b.id==="re5"){ar={};achk=0;pintar5();return;}
+  if(b.dataset.v5!==undefined&&!achk){ar[+b.dataset.v5]=+b.dataset.a;pintar5();}
+  return;
+ }
+ if(ev.target.closest("#x6")){
+  if(b&&b.id==="ck6"){fchk=1;pintar6();return;}
+  if(b&&b.id==="re6"){fm={};fchk=0;pintar6();return;}
+  var s=ev.target.closest(".fr");if(s&&!fchk){var i2=+s.dataset.fr;fm[i2]=!fm[i2];pintar6();}
+ }
+});
+document.addEventListener("keydown",function(ev){var s=ev.target.closest&&ev.target.closest(".fr");if(s&&(ev.key==="Enter"||ev.key===" ")){ev.preventDefault();s.click();}});
+document.addEventListener("DOMContentLoaded",function(){pintar1b();pintar4();pintar5();pintar6();});
+
+</script>
+<script>
+(function(){
+  var escenas=window.ESCENAS,b=document.body,s=0,t=0,nav=document.querySelector("nav.puntos");
+  var $=function(id){return document.getElementById(id)};
+  escenas.forEach(function(e,i){
+    var bt=document.createElement("button");bt.type="button";bt.textContent=(i+1)+". "+e.t;
+    bt.addEventListener("click",function(ev){ev.stopPropagation();ir(i,0);});
+    nav.appendChild(bt);
+  });
+  function pintar(){
+    b.setAttribute("data-s",s);b.setAttribute("data-t",t);
+    var e=escenas[s];
+    $("num").textContent="Escena "+(s+1)+" de "+escenas.length;
+    $("tit").textContent=e.t;$("preg").textContent=e.p;$("cuerpo").textContent=e.c;$("fuente").textContent="Fuente: "+e.f;
+    $("paso").textContent=e.n>1?("Paso "+(t+1)+" de "+e.n):"";
+    $("ant").disabled=(s===0&&t===0);
+    $("sig").disabled=(s===escenas.length-1&&t===e.n-1);
+    nav.querySelectorAll("button").forEach(function(x,i){if(i===s)x.setAttribute("aria-current","step");else x.removeAttribute("aria-current");});
+    document.querySelectorAll("[data-at]").forEach(function(el){var p=el.getAttribute("data-at").split(":");el.classList.toggle("on",+p[0]===s&&t>=+p[1]);});
+    document.querySelectorAll(".esc").forEach(function(el,i){el.setAttribute("aria-hidden",i===s?"false":"true");if("inert" in el)el.inert=(i!==s);});
+    if(window.alPintar)window.alPintar(s,t);
+  }
+  function ir(ns,nt){s=Math.max(0,Math.min(escenas.length-1,ns));t=Math.max(0,Math.min(escenas[s].n-1,nt));pintar();}
+  function sig(){if(t<escenas[s].n-1){t++;pintar();}else if(s<escenas.length-1){ir(s+1,0);}}
+  function ant(){if(t>0){t--;pintar();}else if(s>0){ir(s-1,escenas[s-1].n-1);}}
+  window.irEscena=ir;
+  $("sig").addEventListener("click",function(ev){ev.stopPropagation();sig();});
+  $("ant").addEventListener("click",function(ev){ev.stopPropagation();ant();});
+  $("marco").addEventListener("click",function(ev){if(ev.target.closest(".int,button,select,input,a"))return;sig();});
+  document.addEventListener("keydown",function(ev){
+    var tg=ev.target,enCtl=tg&&tg.closest&&tg.closest("input,select,textarea,.int");
+    if(ev.key==="ArrowRight"||ev.key===" "||ev.key==="PageDown"||ev.key==="Enter"){if(enCtl||(tg.tagName==="BUTTON"&&ev.key!=="ArrowRight"))return;ev.preventDefault();sig();}
+    else if(ev.key==="ArrowLeft"||ev.key==="PageUp"){if(enCtl)return;ev.preventDefault();ant();}
+    else if(ev.key==="Home"){if(enCtl)return;ir(0,0);}
+    else if((ev.key==="f"||ev.key==="F")&&!enCtl){try{if(!document.fullscreenElement){document.documentElement.requestFullscreen().catch(function(){});}else{document.exitFullscreen();}}catch(e){}}
+  });
+  function escalar(){
+    var m=$("marco"),st=$("stage"),w=m.clientWidth,h=m.clientHeight;if(!w||!h)return;
+    var k=Math.min(w/1000,h/640)*0.96,x=(w-1000*k)/2,y=(h-640*k)/2;
+    st.style.transform="translate("+x+"px,"+y+"px) scale("+k+")";
+  }
+  window.addEventListener("resize",escalar);
+  if(window.ResizeObserver){new ResizeObserver(escalar).observe($("marco"));}
+  pintar();escalar();
+})();
+</script>
+</body>
+</html>

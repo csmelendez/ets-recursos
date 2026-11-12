@@ -13,6 +13,9 @@ El caso guía es el informe de AQuAS y RedETS sobre protonterapia (2024).
 | 1 · Bloque 1: Evidencias | Cribado de estudios y diagrama PRISMA | `tema1/cribado-prisma/` |
 | 1 · Bloque 1: Evidencias | Laboratorio de forest plot e I² | `tema1/laboratorio-i2/` |
 | 1 · Bloque 1: Evidencias | La escalera GRADE y el riesgo de sesgo | `tema1/escalera-grade/` |
+| 1 · Impacto y decisión | El mapa de impacto | `tema1/mapa-de-impacto/` |
+| 1 · Impacto y decisión | De la evidencia a la decisión | `tema1/de-la-evidencia-a-la-decision/` |
+| 1 · Impacto y decisión | Documentación y difusión | `tema1/informe-y-difusion/` |
 
 La página de inicio (`index.html`) enlaza todos los recursos. Enlaza también dos herramientas que viven en sus propios repositorios: el [Buscador de evidencia PICO](https://github.com/csmelendez/buscaPICO) y el [Clasificador de productos sanitarios MDR/IVDR](https://github.com/csmelendez/clasificaMD).
 
@@ -24,7 +27,7 @@ Para publicarlo con GitHub Pages: *Settings → Pages → Deploy from a branch*,
 
 ## Vigencia
 
-Normativa comprobada a octubre de 2026. Las páginas resumen la normativa con fines didácticos y no sustituyen la consulta del DOUE ni del BOE. Los datos de los ejemplos de metaanálisis y de certeza GRADE son ficticios, como en los apuntes de la asignatura.
+Normativa comprobada a octubre de 2026; los artículos del Real Decreto 415/2026 citados en el bloque de impacto y decisión, a noviembre de 2026. Las páginas resumen la normativa con fines didácticos y no sustituyen la consulta del DOUE ni del BOE. Los datos de los ejemplos de metaanálisis y de certeza GRADE son ficticios, como en los apuntes de la asignatura. También son ficticios los casos de práctica del bloque de impacto y decisión (armarios automatizados, tomosíntesis, estimulador del hipogloso y los demás del árbol de decisión).
 
 ## Licencia
 
