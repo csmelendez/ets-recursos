@@ -86,6 +86,7 @@ footer{grid-column:1/-1;border-top:1px solid var(--linea);background:var(--papel
     <div class="num">Laboratorio</div>
     <h1>¿Cuentan los estudios la misma historia?</h1>
     <p class="intro">Cuatro estudios ficticios miden el riesgo relativo (RR) de reingreso con una tecnología frente a su comparador. Un RR menor que 1 favorece a la tecnología. Cargad un escenario de los apuntes o moved cada estudio y mirad qué pasa con el rombo y con la I².</p>
+    <p class="intro" style="font-size:13.5px;color:var(--gris)">Sirve para efectos de una intervención. En pruebas diagnósticas, la sensibilidad y la especificidad no se resumen con una I² única.</p>
 
     <div class="lbl">Escenarios de los apuntes</div>
     <div class="esc" id="esc"></div>
@@ -194,7 +195,10 @@ function metan(){
   var su=wu.reduce(function(a,b){return a+b;},0);
   var m=wu.reduce(function(a,x,i){return a+x*st.y[i];},0)/su,se=1/Math.sqrt(su);
   var I2=Q>gl?(Q-gl)/Q*100:0;
-  return {k:k,Q:Q,gl:gl,I2:I2,m:m,lo:m-1.96*se,hi:m+1.96*se,pesos:wu.map(function(x){return x/su*100;})};
+  var wr=st.se.map(function(s){return 1/(s*s+t2);}),sr=wr.reduce(function(a,b){return a+b;},0);
+  var mr=wr.reduce(function(a,x,i){return a+x*st.y[i];},0)/sr;
+  var gana=wr.reduce(function(a,x,i){return a+(x/sr-w[i]/sw)*st.y[i];},0);
+  return {k:k,Q:Q,gl:gl,I2:I2,m:m,lo:m-1.96*se,hi:m+1.96*se,pesos:wu.map(function(x){return x/su*100;}),mf:mf,mr:mr,gana:gana};
 }
 
 var XMIN=Math.log(.25),XMAX=Math.log(2.2);
@@ -258,7 +262,9 @@ function avisos(r){
   if(r.I2>=50)a.push(["","Heterogeneidad importante.","Antes de combinar, buscad el porqué: población, protocolo o riesgo de sesgo distintos. El rombo puede estar promediando estudios que no se parecen."]);
   var dif=Math.max.apply(null,st.y)-Math.min.apply(null,st.y);
   if(r.I2>=50&&dif<Math.log(1.12))a.push(["ambar","I² alta con resultados muy parecidos.","Con estudios muy precisos, diferencias pequeñas producen I² altas. Mirad también si la diferencia entre estudios importa clínicamente."]);
-  if(st.modelo==="fij"&&r.I2>0)a.push(["","Modelo de efectos fijos.","Supone que todos los estudios estiman el mismo efecto. Con heterogeneidad, el de efectos aleatorios es la opción por defecto más prudente en ETS: da más peso relativo a los estudios pequeños y un intervalo más ancho."]);
+  if(Math.abs(r.mr-r.mf)>Math.log(1.06)&&r.gana<0&&r.mr<r.mf)a.push(["ambar","Efectos fijos y aleatorios no dicen lo mismo.","Con efectos fijos el RR combinado es "+fmt(Math.exp(r.mf),2)+"; con aleatorios, "+fmt(Math.exp(r.mr),2)+". Al pasar a aleatorios ganan peso los estudios pequeños, y aquí son los que muestran más efecto. Sospechad un efecto de estudios pequeños (por ejemplo, sesgo de publicación) antes de quedaros con el número más favorable."]);
+  else if(st.modelo==="fij"&&r.I2>0)a.push(["","Modelo de efectos fijos.","Supone que todos los estudios estiman el mismo efecto. Con heterogeneidad se suele preferir el de efectos aleatorios, que da más peso relativo a los estudios pequeños y un intervalo más ancho. Comparad siempre los dos."]);
+  if(r.I2<25)a.push(["","Una I² baja no basta para combinar.","Si los estudios tienen diseños distintos (por ejemplo, un ensayo y varias cohortes), se analizan por separado aunque la I² sea del 0 %. La decisión de combinar es metodológica y clínica, no estadística."]);
   if(st.esc==="B")a.push(["verde","Prueba ahora el escenario D.","Tiene los mismos RR que B; solo cambia el tamaño de los estudios."]);
   $("avisos").innerHTML=a.map(function(x){return '<div class="aviso '+x[0]+'"><b>'+x[1]+'</b> '+x[2]+'</div>';}).join("");
 }

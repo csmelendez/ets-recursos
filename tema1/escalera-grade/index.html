@@ -153,8 +153,10 @@ footer{grid-column:1/-1;border-top:1px solid var(--linea);background:var(--papel
     <div class="seg" id="diseno">
       <button type="button" data-d="eca">Ensayos aleatorizados</button>
       <button type="button" data-d="obs">Observacionales</button>
+      <button type="button" data-d="dia">Exactitud diagnóstica</button>
     </div>
 
+    <p class="bloq" id="notaDia" style="color:var(--gris)"></p>
     <div class="lbl">Motivos para bajar</div>
     <div id="bajar"></div>
 
@@ -225,6 +227,7 @@ footer{grid-column:1/-1;border-top:1px solid var(--linea);background:var(--papel
       <div id="doms"></div>
       <div class="criterio" id="criterio"><input type="checkbox" id="chkVarios"><label for="chkVarios">El equipo considera que las preocupaciones en varios dominios reducen de forma sustancial la confianza en el resultado.</label></div>
       <div class="global" id="global"></div>
+      <p id="notaFin" style="font-size:13.5px;color:#43393D;margin:10px 0 0"></p>
     </div>
     <div class="panel" id="semPanel">
       <h2>El semáforo de los apuntes (RoB 2)</h2>
@@ -313,13 +316,14 @@ function pintarGrade(){
   document.querySelectorAll("#diseno button").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.d===st.d?"true":"false");});
   var baj=bajadas(),puedeSubir=(st.d==="obs"&&baj===0);
   if(!puedeSubir){SUBIR.forEach(function(f){st.v[f.id]=0;});}
-  $("bloq").textContent=st.d==="eca"?"Solo se sube con estudios observacionales: los ensayos ya parten de alta.":(baj<0?"Con algún motivo para bajar activo, no se sube: solo se sube con observacionales sin problemas graves.":"");
+  $("notaDia").innerHTML=st.d==="dia"?"Estudios transversales de exactitud con pacientes consecutivos frente a un estándar de referencia: parten de <b>alta</b>, aunque no sean ensayos. Graduad por separado la sensibilidad y la especificidad: pueden quedar en niveles distintos.":"";
+  $("bloq").textContent=st.d==="eca"?"Solo se sube con estudios observacionales: los ensayos ya parten de alta.":st.d==="dia"?"En los estudios de exactitud diagnóstica no se aplican los motivos para subir: ya parten de alta.":(baj<0?"Con algún motivo para bajar activo, no se sube: solo se sube con observacionales sin problemas graves.":"");
   BAJAR.concat(SUBIR).forEach(function(f){
     var v=st.v[f.id]||0,box=$("f-"+f.id),sube=SUBIR.indexOf(f)>=0;
     box.classList.toggle("act",v!==0);
     box.querySelectorAll(".seg button").forEach(function(b){b.setAttribute("aria-pressed",+b.dataset.o===v?"true":"false");b.disabled=sube&&!puedeSubir;});
   });
-  var ini=st.d==="eca"?4:2,sub=SUBIR.reduce(function(a,f){return a+(st.v[f.id]||0);},0);
+  var ini=st.d==="obs"?2:4,sub=SUBIR.reduce(function(a,f){return a+(st.v[f.id]||0);},0);
   var fin=Math.max(1,Math.min(4,ini+baj+sub));
   // escalera
   document.querySelectorAll(".esc").forEach(function(e){e.classList.toggle("fin",+e.dataset.n===fin);});
@@ -327,19 +331,20 @@ function pintarGrade(){
   $("fIni").style.left=pos[ini][0]+"%";$("fIni").style.bottom="calc("+pos[ini][1]+"% + 8px)";
   $("fFin").style.left=pos[fin][0]+"%";$("fFin").style.bottom="calc("+pos[fin][1]+"% + "+(ini===fin?40:8)+"px)";
   // traza
-  var t='<li><span class="d di">'+NIV[ini]+'</span><span><b>Punto de partida.</b> '+(st.d==="eca"?"Ensayos aleatorizados: se empieza en alta.":"Estudios observacionales: se empieza en baja.")+'</span></li>';
+  var t='<li><span class="d di">'+NIV[ini]+'</span><span><b>Punto de partida.</b> '+(st.d==="eca"?"Ensayos aleatorizados: se empieza en alta.":st.d==="dia"?"Estudios de exactitud diagnóstica con pacientes consecutivos: se empieza en alta.":"Estudios observacionales: se empieza en baja.")+'</span></li>';
   BAJAR.forEach(function(f){var v=st.v[f.id]||0;t+='<li><span class="d '+(v?'dm':'d0')+'">'+(v?opTxt(v):'0')+'</span><span><b>'+f.n+'.</b> '+(v===0?"No se baja.":(v===-1?(f.id==="publi"?"Se baja un nivel (sospechado).":"Se baja un nivel (grave)."):"Se bajan dos niveles (muy grave)."))+'</span></li>';});
   if(st.d==="obs"){SUBIR.forEach(function(f){var v=st.v[f.id]||0;if(v||puedeSubir)t+='<li><span class="d '+(v?'dp':'d0')+'">'+(v?opTxt(v):'0')+'</span><span><b>'+f.n+'.</b> '+(v?"Se sube "+(v===2?"dos niveles.":"un nivel."):"No se sube.")+'</span></li>';});}
   var crudo=ini+baj+sub;
   t+='<li><span class="d di">'+NIV[fin]+'</span><span><b>Certeza final.</b>'+(crudo<1?" La suma baja de «muy baja», que es el último peldaño.":"")+(crudo>4?" La suma pasa de «alta», que es el último peldaño.":"")+'</span></li>';
   $("traza").innerHTML=t;
   // mensaje
-  var S=c.s,O=c.o,m;
-  if(fin===4)m=S+" <u>reduce</u> "+O+".";
-  else if(fin===3)m=S+" <u>probablemente reduce</u> "+O+".";
-  else if(fin===2)m=S+" <u>puede reducir</u> "+O+".";
-  else m="<u>No se sabe si</u> "+S.charAt(0).toLowerCase()+S.slice(1)+" reduce "+O+".";
-  $("mensaje").innerHTML="«"+m+"»<small>Certeza "+NIV[fin].toLowerCase()+". El verbo lo marca la certeza: «reduce», «probablemente reduce», «puede reducir» o «no se sabe si».</small>";
+  var dia=st.d==="dia",S=dia?"La prueba":c.s,O=dia?"los casos de la enfermedad (sensibilidad)":c.o,m;
+  var V=dia?["detecta","probablemente detecta","puede detectar","detecta"]:["reduce","probablemente reduce","puede reducir","reduce"];
+  if(fin===4)m=S+" <u>"+V[0]+"</u> "+O+".";
+  else if(fin===3)m=S+" <u>"+V[1]+"</u> "+O+".";
+  else if(fin===2)m=S+" <u>"+V[2]+"</u> "+O+".";
+  else m="<u>No se sabe si</u> "+S.charAt(0).toLowerCase()+S.slice(1)+" "+V[3]+" "+O+".";
+  $("mensaje").innerHTML="«"+m+"»<small>Certeza "+NIV[fin].toLowerCase()+". "+(dia?"El verbo lo marca la certeza: «detecta», «probablemente detecta», «puede detectar» o «no se sabe si». Repetid la graduación para la especificidad.":"El verbo lo marca la certeza: «reduce», «probablemente reduce», «puede reducir» o «no se sabe si».")+"</small>";
 }
 
 /* ---------- ayuda de imprecisión ---------- */
@@ -365,7 +370,7 @@ function pintarImp(){
   else if(zl==="importante"&&zh==="menor"){txt="Un extremo indica "+Z.importante+" y el otro "+Z.menor+". <b>Se baja un nivel.</b>";btn=[-1];}
   else if(zl==="menor"&&zh==="dano"){txt="Un extremo indica "+Z.menor+" y el otro "+Z.dano+". <b>Se baja un nivel</b>; dos si el daño posible es grande.";btn=[-1,-2];}
   else{txt="El intervalo va de "+Z.importante+" a "+Z.dano+". <b>Se baja uno o dos niveles</b>, según lo lejos que llegue el extremo de daño. Lo decide el equipo y lo justifica.";btn=[-1,-2];}
-  $("veredicto").innerHTML=txt+'<br><span style="color:var(--gris);font-size:13px">El tamaño de la muestra también cuenta: el informe de protonterapia baja un nivel si hay menos de 100 pacientes, aunque el intervalo parezca estrecho.</span>';
+  $("veredicto").innerHTML=txt+'<br><span style="color:var(--gris);font-size:13px">Con desenlaces continuos (diferencia de medias) la lógica es la misma: se comprueba si los dos extremos del intervalo quedan del mismo lado de la diferencia mínima importante. El tamaño de la muestra también cuenta: el informe de protonterapia baja un nivel si hay menos de 100 pacientes, aunque el intervalo parezca estrecho.</span>';
   $("aplicar").innerHTML=btn.map(function(v){return '<button type="button" data-v="'+v+'">Aplicar '+(v===0?"«no se baja»":opTxt(v))+' a la escalera</button>';}).join("");
   $("aplicar").querySelectorAll("button").forEach(function(b){b.addEventListener("click",function(){st.v.impre=+b.dataset.v;marcarLibre();pintarGrade();});});
 }
@@ -453,6 +458,7 @@ function pintarSesgo(){
   }
   $("global").innerHTML='<i class="c '+J[g][0]+'">'+J[g][1]+'</i><div><b>Juicio global: '+nom+'</b><span>'+why+'</span></div>';
   $("semPanel").style.display=rs.h==="rob2"?"":"none";
+  $("notaFin").innerHTML=rs.h==="quadas"?"":"<b>¿Y si lo financia el fabricante?</b> La financiación no es un dominio de "+(rs.h==="rob2"?"RoB 2":"ROBINS-I")+": se anota, pero no sube por sí sola el riesgo de sesgo. Pesa en GRADE si hay indicios de sesgo de publicación, como ensayos terminados sin publicar.";
 }
 // semáforo de los apuntes
 (function(){
