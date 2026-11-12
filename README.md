@@ -10,6 +10,7 @@ El caso guía es el informe de AQuAS y RedETS sobre protonterapia (2024).
 |---|---|---|
 | 1 | La ETS de un vistazo | `tema1/ets-de-un-vistazo/` |
 | 1 · Bloque 1: Evidencias | La revisión sistemática paso a paso | `tema1/revision-sistematica/` |
+| 1 · Bloque 1: Evidencias | Cribado de estudios y diagrama PRISMA | `tema1/cribado-prisma/` |
 | 1 · Bloque 1: Evidencias | Laboratorio de forest plot e I² | `tema1/laboratorio-i2/` |
 | 1 · Bloque 1: Evidencias | La escalera GRADE y el riesgo de sesgo | `tema1/escalera-grade/` |
 

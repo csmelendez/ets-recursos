@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cribado de estudios y diagrama PRISMA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Plan: granate UCLM para la estructura y los controles; verde para «pasa / se incluye», gris rosado para «se excluye»,
+     ámbar para los avisos de discrepancia. Layout: criterios fijos a la izquierda, registros a la derecha, en tres pasos. */
+  --granate:#A3002F; --granate-claro:#F7E4E9; --verde:#25695C; --verde-claro:#E1EFEB;
+  --ambar:#B4621B; --ambar-claro:#F6EADF; --excl:#C9BEC2;
+  --tinta:#2A2125; --gris:#6C6266; --linea:#DED6D9; --papel:#FFFFFF; --fondo:#F6F3F4;
+  --f-disp:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;
+  --f-cuerpo:"IBM Plex Sans",Arial,Helvetica,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--fondo);color:var(--tinta);font-family:var(--f-cuerpo);line-height:1.5}
+header{display:flex;align-items:center;gap:20px;padding:12px 24px;background:var(--papel);border-bottom:1px solid var(--linea);flex-wrap:wrap}
+.volver{font:600 13px var(--f-cuerpo);color:var(--granate);text-decoration:none;border:1px solid var(--granate);border-radius:999px;padding:4px 11px}
+.volver:hover{background:var(--granate);color:#fff}
+.marca{font-family:var(--f-disp);font-weight:700;color:var(--granate);font-size:15px;letter-spacing:.02em}
+.marca span{color:var(--gris);font-weight:500}
+nav.pasos{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+nav.pasos button{font:600 13.5px var(--f-cuerpo);border:1px solid var(--granate);background:var(--papel);color:var(--granate);border-radius:999px;padding:6px 13px;cursor:pointer}
+nav.pasos button[aria-current="step"]{background:var(--granate);color:#fff}
+nav.pasos button:disabled{opacity:.35;cursor:default}
+button:focus-visible,select:focus-visible{outline:3px solid var(--ambar);outline-offset:2px}
+
+main{display:grid;grid-template-columns:minmax(300px,370px) 1fr;min-height:calc(100vh - 54px)}
+aside{padding:22px 22px 30px;background:var(--papel);border-right:1px solid var(--linea)}
+.num{font-family:var(--f-disp);font-weight:600;color:var(--granate);font-size:15px;letter-spacing:.06em;text-transform:uppercase}
+h1{font:700 32px/1.05 var(--f-disp);margin:4px 0 10px}
+.intro{font-size:14.5px;margin:0 0 6px;color:#43393D}
+.lbl{font:600 12px var(--f-cuerpo);letter-spacing:.08em;text-transform:uppercase;color:var(--gris);margin:18px 0 8px}
+.pico{border:1px solid var(--linea);border-radius:10px;overflow:hidden}
+.pico div{display:grid;grid-template-columns:34px 1fr;gap:8px;padding:7px 10px;border-top:1px solid var(--linea);font-size:13.5px;line-height:1.4}
+.pico div:first-child{border-top:0}
+.pico b{font:700 20px/1 var(--f-disp);color:var(--granate)}
+.pico .d b{color:var(--verde)}
+.excl{font-size:13.5px;line-height:1.45;margin:0;padding-left:18px}
+.contador{margin-top:16px;padding:12px 14px;border-radius:10px;background:var(--fondo);font-size:14px}
+.contador b{font:700 22px var(--f-disp)}
+
+section.der{padding:22px 26px 40px;min-width:0}
+.cab2{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.cab2 h2{font:700 24px var(--f-disp);margin:0}
+.cab2 p{margin:2px 0 0;font-size:14.5px;color:#43393D;max-width:72ch}
+.btn{font:600 14px var(--f-cuerpo);border:1px solid var(--granate);background:var(--granate);color:#fff;border-radius:6px;padding:8px 14px;cursor:pointer}
+.btn.sec{background:var(--papel);color:var(--granate)}
+.btn:disabled{opacity:.35;cursor:default}
+.reg{background:var(--papel);border:1px solid var(--linea);border-left:5px solid var(--linea);border-radius:10px;padding:12px 16px;margin-bottom:10px}
+.reg.pasa,.reg.inc{border-left-color:var(--verde)}
+.reg.exc{border-left-color:var(--excl)}
+.reg .top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.reg .id{font:700 13px var(--f-disp);color:var(--granate);letter-spacing:.04em;text-transform:uppercase}
+.reg .tipo{font-size:12.5px;color:var(--gris)}
+.reg h3{font:700 18px/1.2 var(--f-disp);margin:2px 0 6px}
+.reg p{margin:0;font-size:14px;line-height:1.5}
+.reg .tc{margin-top:8px;padding:9px 12px;border-radius:8px;background:var(--ambar-claro);font-size:14px;line-height:1.5}
+.reg .tc b{font-family:var(--f-disp)}
+.dec{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.dec button{font:600 13px var(--f-cuerpo);border:1px solid var(--granate);background:var(--papel);color:var(--granate);border-radius:6px;padding:6px 11px;cursor:pointer}
+.dec button[aria-pressed="true"].si{background:var(--verde);border-color:var(--verde);color:#fff}
+.dec button[aria-pressed="true"].no{background:var(--tinta);border-color:var(--tinta);color:#fff}
+.dec select{font:inherit;font-size:13.5px;padding:5px 8px;border-radius:6px;border:1px solid var(--linea);background:var(--papel)}
+.aviso{background:var(--ambar-claro);border-left:4px solid var(--ambar);border-radius:0 8px 8px 0;padding:10px 14px;font-size:14px;margin-bottom:12px}
+
+/* PRISMA */
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.flujo{background:var(--papel);border:1px solid var(--linea);border-radius:12px;padding:16px}
+.flujo h3{font:700 18px var(--f-disp);margin:0 0 10px}
+.fila{display:grid;grid-template-columns:1fr 26px 1fr;align-items:center;margin-bottom:8px}
+.caja{border:1.5px solid var(--tinta);border-radius:6px;padding:8px 10px;font-size:13.5px;line-height:1.35;background:var(--papel)}
+.caja b{font:700 20px var(--f-disp);display:block}
+.caja.lat{border-color:var(--excl);background:var(--fondo)}
+.caja.fin{border-color:var(--verde);background:var(--verde-claro)}
+.flecha{text-align:center;color:var(--gris)}
+.abajo{text-align:center;color:var(--gris);line-height:1;margin:-2px 0 4px;width:calc(50% - 13px)}
+.motivos{font-size:12.5px;margin-top:4px;color:#43393D}
+.coinc{margin-top:16px;background:var(--papel);border:1px solid var(--linea);border-radius:12px;padding:16px}
+.coinc h3{font:700 18px var(--f-disp);margin:0 0 8px}
+table.cmp{width:100%;border-collapse:collapse;font-size:13.5px}
+table.cmp th{text-align:left;font:600 12px var(--f-cuerpo);letter-spacing:.06em;text-transform:uppercase;color:var(--gris);padding:6px 6px;border-bottom:1px solid var(--linea)}
+table.cmp td{padding:7px 6px;border-bottom:1px solid var(--linea);vertical-align:top}
+.ok{color:var(--verde);font-weight:700}
+.ko{color:var(--ambar);font-weight:700}
+.claves{margin-top:16px;padding:14px 16px;border-radius:10px;background:var(--verde-claro);border-left:4px solid var(--verde);font-size:14.5px;line-height:1.5}
+.claves ul{margin:6px 0 0;padding-left:18px}
+footer{grid-column:1/-1;border-top:1px solid var(--linea);background:var(--papel);padding:14px 24px;font-size:12.5px;color:var(--gris)}
+@media (max-width:980px){main{grid-template-columns:1fr}aside{border-right:0;border-bottom:1px solid var(--linea)}.dos{grid-template-columns:1fr}section.der{padding:16px 12px}}
+</style>
+</head>
+<body>
+<header>
+  <a class="volver" href="../../index.html">← Colección</a>
+  <div class="marca">Tema 1 · Bloque 1: Evidencias <span>· Cribado de estudios y diagrama PRISMA</span></div>
+  <nav class="pasos" id="pasos">
+    <button type="button" data-p="1">1. Título y resumen</button>
+    <button type="button" data-p="2">2. Texto completo</button>
+    <button type="button" data-p="3">3. Diagrama y comparación</button>
+  </nav>
+</header>
+<main>
+  <aside>
+    <div class="num">Selección de estudios</div>
+    <h1>¿Qué estudios responden a la pregunta?</h1>
+    <p class="intro">La búsqueda ha devuelto 23 registros y el gestor bibliográfico ha quitado 3 duplicados. Quedan 20 para cribar con los criterios fijados antes de empezar. Todos los registros son ficticios.</p>
+    <div class="lbl">Pregunta (PICO-D)</div>
+    <div class="pico">
+      <div><b>P</b><span>Adultos con insuficiencia cardiaca crónica en seguimiento ambulatorio.</span></div>
+      <div><b>I</b><span>Telemonitorización domiciliaria: el paciente transmite desde casa constantes y síntomas, que revisa el equipo sanitario.</span></div>
+      <div><b>C</b><span>Seguimiento convencional en consulta.</span></div>
+      <div><b>O</b><span>Reingresos hospitalarios y calidad de vida.</span></div>
+      <div class="d"><b>D</b><span>Ensayos aleatorizados y estudios observacionales comparativos, con grupo control propio.</span></div>
+    </div>
+    <div class="lbl">Se excluyen además</div>
+    <ul class="excl">
+      <li>Comunicaciones a congresos, cartas y editoriales.</li>
+      <li>Estudios sin resultados disponibles.</li>
+      <li>Publicaciones en idiomas distintos del español y el inglés.</li>
+    </ul>
+    <div class="contador" id="contador"></div>
+  </aside>
+
+  <section class="der" id="der"></section>
+
+  <footer>Ejercicio ficticio basado en la pregunta PICO de telemonitorización en insuficiencia cardiaca del bloque de evidencias del Tema 1. Ninguno de los registros corresponde a un estudio real. Diagrama según la estructura de PRISMA 2020 (Page et al., BMJ 2021;372:n71). Las decisiones de referencia son las de un equipo revisor: en algunos registros se aceptan dos respuestas.</footer>
+</main>
+
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+var MOT=["Población","Intervención","Comparador","Desenlace","Diseño","Tipo de publicación","Sin resultados"];
+/* r1: referencia en el cribado ("pasa" | motivo de exclusión); a1: alternativa aceptada en el cribado.
+   r2: referencia a texto completo ("incluir" | motivo). */
+var R=[
+ {t:"Telemonitorización domiciliaria en insuficiencia cardiaca crónica: ensayo aleatorizado",ti:"Ensayo aleatorizado · 2021",ab:"420 adultos con insuficiencia cardiaca crónica en seguimiento ambulatorio, aleatorizados a telemonitorización diaria (peso, tensión arterial y síntomas, revisados por enfermería) o a seguimiento habitual en consulta. Desenlace principal: reingresos por insuficiencia cardiaca a 12 meses. Secundario: calidad de vida.",tc:"Confirma población, intervención, comparador y desenlaces. Pérdidas del 6 %.",r1:"pasa",r2:"incluir",ex:"Cumple los cinco componentes de la pregunta."},
+ {t:"Telemonitorización iniciada al alta de un ingreso por insuficiencia cardiaca",ti:"Ensayo aleatorizado · 2019",ab:"310 pacientes dados de alta tras una descompensación, aleatorizados a un programa de telemonitorización o a seguimiento convencional. Reingresos a 6 meses y calidad de vida.",tc:"Tras el alta, todos siguen en seguimiento ambulatorio y el control es el seguimiento habitual en consulta.",r1:"pasa",r2:"incluir",ex:"«Dado de alta» no lo saca de la población: tras el ingreso, el seguimiento es ambulatorio."},
+ {t:"Resultados preliminares de un ensayo de telemonitorización en insuficiencia cardiaca",ti:"Comunicación a congreso · 2022",ab:"Resumen de comunicación oral: análisis intermedio a 6 meses de los primeros 200 pacientes de un ensayo aleatorizado de telemonitorización.",r1:"Tipo de publicación",ex:"Los criterios excluyen las comunicaciones a congresos. Además, parece un avance del ensayo del registro 1: no es un estudio nuevo."},
+ {t:"Telemonitorización y reingresos en insuficiencia cardiaca: cohorte de un registro regional",ti:"Cohorte comparativa · 2023",ab:"1.240 pacientes con insuficiencia cardiaca, 512 con telemonitorización y 728 sin ella. Análisis ajustado por edad, fracción de eyección, comorbilidad y hospital. Reingresos a 12 meses.",tc:"Grupo control concurrente con seguimiento convencional. El ajuste no incluye la motivación del paciente ni su competencia digital.",r1:"pasa",r2:"incluir",ex:"La pregunta es PICO-D y admite observacionales comparativos. Que tenga limitaciones no lo excluye: eso se valora después con ROBINS-I."},
+ {t:"Telemonitorización domiciliaria en la enfermedad pulmonar obstructiva crónica",ti:"Ensayo aleatorizado · 2020",ab:"260 pacientes con EPOC grave aleatorizados a telemonitorización o a atención habitual. Ingresos por exacerbación a 12 meses.",r1:"Población",ex:"Otra enfermedad. Se descarta ya por el título."},
+ {t:"Telemonitorización estructurada en insuficiencia cardiaca: ensayo aleatorizado multicéntrico",ti:"Ensayo aleatorizado · 2024",ab:"580 pacientes con insuficiencia cardiaca. Se comparó un programa de telemonitorización estructurada con un grupo que recibió el «seguimiento estándar del programa». Reingresos y calidad de vida a 12 meses.",tc:"El «seguimiento estándar del programa» era telemonitorización sin llamada semanal de enfermería: los dos grupos estaban telemonitorizados.",r1:"pasa",r2:"Comparador",ex:"El resumen no aclara el comparador; por eso pasa a texto completo. Allí se ve que compara dos formas de telemonitorizar, no telemonitorización frente a seguimiento convencional."},
+ {t:"Satisfacción de 45 pacientes con un sistema de telemonitorización cardiaca",ti:"Serie de casos · 2018",ab:"Encuesta de satisfacción a 45 pacientes con insuficiencia cardiaca que usan un sistema de telemonitorización durante tres meses.",r1:"Diseño",ex:"Sin grupo de comparación y con un desenlace que no está en la pregunta."},
+ {t:"Telemedicina en cardiología: estado actual y perspectivas",ti:"Revisión narrativa · 2025",ab:"Revisión de las aplicaciones de la telemedicina en cardiología, de la telemonitorización a la inteligencia artificial.",r1:"Diseño",ex:"No es un estudio primario. Sí conviene repasar sus referencias por si citan ensayos que la búsqueda no encontró."},
+ {t:"Exactitud de una báscula conectada en voluntarios sanos",ti:"Estudio técnico · 2021",ab:"Comparación del peso medido por una báscula con transmisión inalámbrica y una báscula de referencia en 60 voluntarios sanos.",r1:"Población",ex:"No hay pacientes con insuficiencia cardiaca ni desenlaces clínicos: es una validación técnica del dispositivo."},
+ {t:"Ensayo aleatorizado de telemonitorización en insuficiencia cardiaca ambulatoria",ti:"Ensayo aleatorizado · 2017",ab:"260 pacientes con insuficiencia cardiaca en seguimiento ambulatorio, aleatorizados a telemonitorización o a seguimiento habitual. Se describen el diseño, la adherencia y los resultados a 12 meses.",tc:"Los únicos resultados son la proporción de días con transmisión completa y la satisfacción. No recoge reingresos ni calidad de vida.",r1:"pasa",r2:"Desenlace",ex:"El resumen promete «resultados a 12 meses», pero en el texto completo no hay ninguno de los desenlaces de la pregunta."},
+ {t:"Registro de ensayo: telemonitorización frente a seguimiento habitual en insuficiencia cardiaca",ti:"Registro de ensayos · 2019",ab:"Ensayo aleatorizado registrado. 600 pacientes previstos. Desenlace principal: reingresos a 12 meses. Fecha prevista de finalización: 2022.",tc:"No hay resultados ni en el registro ni en ninguna revista. El ensayo figura como terminado en 2022.",r1:"pasa",a1:"Sin resultados",r2:"Sin resultados",ex:"Se excluye por no tener resultados, pero se anota: un ensayo grande terminado y sin publicar es una señal de posible sesgo de publicación, que se tendrá en cuenta en GRADE."},
+ {t:"Sensor implantable de presión arterial pulmonar para el seguimiento a distancia de la insuficiencia cardiaca",ti:"Ensayo aleatorizado · 2022",ab:"Pacientes con insuficiencia cardiaca aleatorizados a seguimiento guiado por un sensor implantado en la arteria pulmonar o a atención habitual. Hospitalizaciones a 12 meses.",r1:"Intervención",a1:"pasa",ex:"Es un implante, con otro procedimiento y otro perfil de riesgo: merece su propia pregunta. Si se pasa a texto completo por prudencia, también es correcto."},
+ {t:"Vivir con la telemonitorización: entrevistas a pacientes con insuficiencia cardiaca y a sus cuidadores",ti:"Estudio cualitativo · 2020",ab:"Entrevistas semiestructuradas a 18 pacientes y 12 cuidadores sobre su experiencia con un programa de telemonitorización.",r1:"Diseño",ex:"Responde a otra pregunta, la de la experiencia de los pacientes, que pediría el marco SPIDER."},
+ {t:"Seguimiento a distancia en pacientes con insuficiencia cardiaca y desfibrilador implantable",ti:"Ensayo aleatorizado · 2023",ab:"640 pacientes con insuficiencia cardiaca y desfibrilador automático implantable, aleatorizados a seguimiento a distancia o a revisiones presenciales. Hospitalizaciones y mortalidad a 24 meses.",tc:"El «seguimiento a distancia» es la revisión remota del propio desfibrilador (alertas técnicas y de arritmias). Los pacientes no transmiten constantes ni síntomas desde casa.",r1:"pasa",a1:"Intervención",r2:"Intervención",ex:"Suena a telemonitorización, pero es otra intervención: el control remoto de un dispositivo implantado."},
+ {t:"Coste-efectividad de la telemonitorización en insuficiencia cardiaca: modelo de Markov",ti:"Evaluación económica · 2024",ab:"Modelo de Markov que estima el coste por AVAC de la telemonitorización frente al seguimiento convencional, con datos de efectividad de la literatura.",r1:"Diseño",ex:"No aporta datos clínicos propios. Será útil para la parte económica de la evaluación, no para esta revisión."},
+ {t:"Ensayo multicéntrico de telemonitorización domiciliaria en 1.500 pacientes con insuficiencia cardiaca",ti:"Ensayo aleatorizado · 2025",ab:"1.500 pacientes con insuficiencia cardiaca en seguimiento ambulatorio de 20 hospitales, aleatorizados a telemonitorización o a seguimiento habitual. Reingresos y mortalidad a 24 meses; calidad de vida.",tc:"Confirma todos los componentes de la pregunta.",r1:"pasa",r2:"incluir",ex:"Cumple la pregunta y es el estudio más grande."},
+ {t:"Reingresos en un programa de telemonitorización de insuficiencia cardiaca: cinco años de experiencia",ti:"Cohorte · 2021",ab:"380 pacientes incluidos en un programa de telemonitorización. Se describen los reingresos y la mortalidad durante cinco años.",tc:"Solo hay pacientes telemonitorizados. Los resultados se comparan con tasas publicadas por otros hospitales, no con un grupo control propio.",r1:"pasa",a1:"Diseño",r2:"Diseño",ex:"«Cohorte» no basta: la pregunta exige un grupo de comparación propio, y aquí no lo hay."},
+ {t:"Telemonitorización de la tensión arterial en hipertensión no controlada",ti:"Ensayo aleatorizado · 2019",ab:"Pacientes con hipertensión no controlada aleatorizados a telemonitorización de la tensión arterial o a atención habitual.",r1:"Población",ex:"Otra enfermedad, aunque la tecnología se parezca."},
+ {t:"Carta al director: ¿reduce de verdad la telemonitorización los reingresos?",ti:"Carta · 2026",ab:"Comentario crítico sobre un ensayo reciente de telemonitorización en insuficiencia cardiaca.",r1:"Tipo de publicación",ex:"Las cartas se excluyen. Puede servir para la discusión, no como evidencia."},
+ {t:"Telemonitorización con enfermera gestora de casos en atención primaria: ensayo aleatorizado por conglomerados",ti:"Ensayo por conglomerados · 2022",ab:"24 centros de salud aleatorizados; 860 pacientes con insuficiencia cardiaca recibieron telemonitorización con enfermera gestora o seguimiento habitual. Reingresos y calidad de vida a 12 meses.",tc:"La unidad de aleatorización es el centro de salud, no el paciente. Comparador: seguimiento habitual en consulta.",r1:"pasa",r2:"incluir",ex:"Sigue siendo un ensayo aleatorizado que responde a la pregunta. Al valorarlo habrá que tener en cuenta que se aleatorizaron centros."}
+];
+var st={p:1,d1:R.map(function(){return null;}),d2:R.map(function(){return null;}),m1:R.map(function(){return "";}),m2:R.map(function(){return "";})};
+
+document.querySelectorAll("#pasos button").forEach(function(b){b.addEventListener("click",function(){ir(+b.dataset.p);});});
+function completo1(){return st.d1.every(function(v){return v!==null;});}
+function pasan(){var a=[];st.d1.forEach(function(v,i){if(v==="pasa")a.push(i);});return a;}
+function completo2(){return pasan().every(function(i){return st.d2[i]==="incluir"||(st.d2[i]==="excluir"&&st.m2[i]);});}
+function ir(p){
+  if(p>=2&&!completo1())return; if(p===3&&!completo2())return;
+  st.p=p;pintar();window.scrollTo(0,0);
+}
+function pintarNav(){
+  document.querySelectorAll("#pasos button").forEach(function(b){var p=+b.dataset.p;
+    if(p===st.p)b.setAttribute("aria-current","step");else b.removeAttribute("aria-current");
+    b.disabled=(p>=2&&!completo1())||(p===3&&!completo2());});
+  var hechos=st.d1.filter(function(v){return v!==null;}).length;
+  $("contador").innerHTML=st.p===1?('<b>'+hechos+' / 20</b> registros cribados'):st.p===2?('<b>'+pasan().filter(function(i){return st.d2[i]==="incluir"||(st.d2[i]==="excluir"&&st.m2[i]);}).length+' / '+pasan().length+'</b> registros leídos a texto completo'):'<b>Cribado terminado</b>';
+}
+function selMot(i,fase,val){
+  return '<select data-i="'+i+'" data-f="'+fase+'" aria-label="Motivo de exclusión"><option value="">Motivo…</option>'+MOT.map(function(m){return '<option'+(m===val?' selected':'')+'>'+m+'</option>';}).join("")+'</select>';
+}
+function pintar(){
+  pintarNav();var h="";
+  if(st.p===1){
+    h+='<div class="cab2"><div><h2>Paso 1 · Cribado por título y resumen</h2><p>Decidid con lo que dice el título y el resumen. Si hay dudas, el registro pasa a texto completo: excluir por error un estudio relevante es peor que leer uno de más. En esta fase no hace falta motivo, aunque podéis anotarlo.</p></div><button class="btn" id="sig1"'+(completo1()?'':' disabled')+'>Pasar a texto completo →</button></div>';
+    R.forEach(function(r,i){
+      var v=st.d1[i];
+      h+='<div class="reg '+(v==="pasa"?"pasa":v==="excluir"?"exc":"")+'"><div class="top"><span class="id">Registro '+(i+1)+'</span><span class="tipo">'+r.ti+'</span></div><h3>'+r.t+'</h3><p>'+r.ab+'</p>';
+      h+='<div class="dec"><button type="button" class="si" data-i="'+i+'" data-v="pasa" aria-pressed="'+(v==="pasa")+'">Pasa a texto completo</button><button type="button" class="no" data-i="'+i+'" data-v="excluir" aria-pressed="'+(v==="excluir")+'">Excluir</button>'+(v==="excluir"?selMot(i,1,st.m1[i]):'')+'</div></div>';
+    });
+  }else if(st.p===2){
+    var ps=pasan();
+    h+='<div class="cab2"><div><h2>Paso 2 · Lectura a texto completo</h2><p>Habéis pasado '+ps.length+' registros. Al leer el artículo completo aparece información que el resumen no daba (en el recuadro). Ahora cada exclusión lleva su motivo: es lo que pide el diagrama.</p></div><button class="btn" id="sig2"'+(completo2()?'':' disabled')+'>Ver el diagrama →</button></div>';
+    ps.forEach(function(i){
+      var r=R[i],v=st.d2[i];
+      h+='<div class="reg '+(v==="incluir"?"inc":v==="excluir"?"exc":"")+'"><div class="top"><span class="id">Registro '+(i+1)+'</span><span class="tipo">'+r.ti+'</span></div><h3>'+r.t+'</h3><p>'+r.ab+'</p>';
+      h+='<div class="tc"><b>Texto completo.</b> '+(r.tc||"No añade nada relevante a lo que ya decía el resumen.")+'</div>';
+      h+='<div class="dec"><button type="button" class="si" data-i="'+i+'" data-v="incluir" aria-pressed="'+(v==="incluir")+'">Incluir</button><button type="button" class="no" data-i="'+i+'" data-v="excluir" aria-pressed="'+(v==="excluir")+'">Excluir</button>'+(v==="excluir"?selMot(i,2,st.m2[i]):'')+'</div></div>';
+    });
+  }else{
+    h+=resultado();
+  }
+  $("der").innerHTML=h;
+  $("der").querySelectorAll(".dec button").forEach(function(b){b.addEventListener("click",function(){
+    var i=+b.dataset.i;if(st.p===1){st.d1[i]=b.dataset.v;if(b.dataset.v==="pasa"){st.m1[i]="";}}else{st.d2[i]=b.dataset.v;if(b.dataset.v==="incluir")st.m2[i]="";}
+    var y=window.scrollY;pintar();window.scrollTo(0,y);});});
+  $("der").querySelectorAll("select").forEach(function(s){s.addEventListener("change",function(){var i=+s.dataset.i;if(s.dataset.f==="1")st.m1[i]=s.value;else st.m2[i]=s.value;var y=window.scrollY;pintar();window.scrollTo(0,y);});});
+  var s1=$("sig1");if(s1)s1.addEventListener("click",function(){ir(2);});
+  var s2=$("sig2");if(s2)s2.addEventListener("click",function(){ir(3);});
+}
+function flujo(titulo,cr,ft,motivos){
+  var exc1=20-cr,inc=ft.filter(function(x){return x;}).length,exc2=cr-inc;
+  var mt=Object.keys(motivos).filter(function(k){return motivos[k];}).map(function(k){return k.toLowerCase()+" ("+motivos[k]+")";}).join(" · ");
+  var c='<div class="flujo"><h3>'+titulo+'</h3>';
+  c+='<div class="fila"><div class="caja"><b>23</b>registros identificados<div class="motivos">MEDLINE 13 · Embase 8 · registros de ensayos 2</div></div><div class="flecha">→</div><div class="caja lat"><b>3</b>duplicados eliminados</div></div><div class="abajo">↓</div>';
+  c+='<div class="fila"><div class="caja"><b>20</b>registros cribados por título y resumen</div><div class="flecha">→</div><div class="caja lat"><b>'+exc1+'</b>excluidos en el cribado</div></div><div class="abajo">↓</div>';
+  c+='<div class="fila"><div class="caja"><b>'+cr+'</b>evaluados a texto completo</div><div class="flecha">→</div><div class="caja lat"><b>'+exc2+'</b>excluidos a texto completo<div class="motivos">'+(mt||"—")+'</div></div></div><div class="abajo">↓</div>';
+  c+='<div class="fila"><div class="caja fin"><b>'+inc+'</b>estudios incluidos</div><div></div><div></div></div></div>';
+  return c;
+}
+function resultado(){
+  var ps=pasan(),mot={},motR={};
+  ps.forEach(function(i){if(st.d2[i]==="excluir")mot[st.m2[i]]=(mot[st.m2[i]]||0)+1;});
+  var refP=[];R.forEach(function(r,i){if(r.r1==="pasa")refP.push(i);});
+  refP.forEach(function(i){if(R[i].r2!=="incluir")motR[R[i].r2]=(motR[R[i].r2]||0)+1;});
+  var h='<div class="cab2"><div><h2>Paso 3 · El diagrama y la comparación</h2><p>A la izquierda, vuestro diagrama. A la derecha, el del equipo revisor de referencia. Que no coincidan no significa que estéis mal: mirad en qué registros os separáis y por qué.</p></div><button class="btn sec" id="reini">Empezar de nuevo</button></div>';
+  h+='<div class="dos">'+flujo("Vuestro diagrama",ps.length,ps.map(function(i){return st.d2[i]==="incluir";}),mot)+flujo("Equipo revisor de referencia",refP.length,refP.map(function(i){return R[i].r2==="incluir";}),motR)+'</div>';
+  var ok=0,filas="";
+  R.forEach(function(r,i){
+    var tu=st.d1[i]==="excluir"?"Excluido en el cribado"+(st.m1[i]?" ("+st.m1[i].toLowerCase()+")":""):(st.d2[i]==="incluir"?"Incluido":"Excluido a texto completo ("+(st.m2[i]||"").toLowerCase()+")");
+    var tuFinal=st.d1[i]==="excluir"?"fuera":(st.d2[i]==="incluir"?"dentro":"fuera");
+    var refFinal=(r.r1==="pasa"&&r.r2==="incluir")?"dentro":"fuera";
+    var refTxt=r.r1==="pasa"?(r.r2==="incluir"?"Incluido":"Excluido a texto completo ("+r.r2.toLowerCase()+")"):"Excluido en el cribado ("+r.r1.toLowerCase()+")";
+    if(r.a1)refTxt+=r.a1==="pasa"?". También vale pasarlo a texto completo":". También vale excluirlo en el cribado";
+    var coincide=tuFinal===refFinal;
+    var nota="";
+    if(refFinal==="dentro"&&st.d1[i]==="excluir")nota=" <span class='ko'>Lo excluisteis en el cribado y era relevante: es el error que el cribado debe evitar.</span>";
+    if(coincide)ok++;
+    filas+='<tr><td><b>'+(i+1)+'</b></td><td>'+tu+'</td><td>'+refTxt+'</td><td class="'+(coincide?'ok':'ko')+'">'+(coincide?'✓':'≠')+'</td><td>'+r.ex+nota+'</td></tr>';
+  });
+  h+='<div class="coinc"><h3>Registro a registro · coincidís en el resultado final de '+ok+' de 20</h3><table class="cmp"><tr><th>Reg.</th><th>Vuestra decisión</th><th>Referencia</th><th></th><th>Por qué</th></tr>'+filas+'</table></div>';
+  h+='<div class="claves"><b>Lo que hay que llevarse</b><ul><li>Los criterios se fijan antes de cribar y salen de la pregunta: cada motivo de exclusión es un componente del PICO-D que no se cumple.</li><li>En el cribado, ante la duda, el registro pasa. A texto completo, cada exclusión lleva su motivo.</li><li>Un resumen puede engañar en los dos sentidos: el comparador del registro 6 o los «resultados» del registro 10 solo se aclaran al leer el artículo.</li><li>El ensayo registrado y sin publicar (registro 11) no entra en la síntesis, pero vuelve a aparecer al valorar el sesgo de publicación en GRADE.</li><li>En una revisión real, dos personas criban por separado y resuelven sus discrepancias con un procedimiento fijado de antemano. Comparad vuestro diagrama con el de otro equipo antes de mirar la referencia.</li></ul></div>';
+  setTimeout(function(){var b=$("reini");if(b)b.addEventListener("click",function(){st.d1=R.map(function(){return null;});st.d2=R.map(function(){return null;});st.m1=R.map(function(){return "";});st.m2=R.map(function(){return "";});ir(1);});},0);
+  return h;
+}
+pintar();
+})();
+</script>
+</body>
+</html>
