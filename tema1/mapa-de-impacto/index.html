@@ -129,7 +129,7 @@ td.sd{color:var(--rojo)}
 /* Escena 8: cierre */
 .lista{position:absolute;left:30px;top:24px;width:560px;display:flex;flex-direction:column;gap:8px}
 .lista div{background:var(--papel);border:1px solid var(--linea);border-radius:8px;padding:9px 12px 9px 40px;position:relative;font-size:14.5px;line-height:1.4}
-.lista div::before{content:"";position:absolute;left:13px;top:12px;width:15px;height:15px;border:2px solid var(--ambar);border-radius:4px}
+.lista div.chk{cursor:pointer;user-select:none;transition:background .15s,border-color .15s}.lista div.chk:hover{border-color:var(--ambar)}.lista div.chk:focus-visible{outline:2px solid var(--granate);outline-offset:2px}.lista div.chk::before{content:"";position:absolute;left:13px;top:12px;width:15px;height:15px;border:2px solid var(--ambar);border-radius:4px;background:#fff}.lista div.chk[aria-checked="true"]{background:#f4f8ef;border-color:#7a9a4a}.lista div.chk[aria-checked="true"]::before{background:#7a9a4a;border-color:#7a9a4a}.lista div.chk[aria-checked="true"]::after{content:"";position:absolute;left:19px;top:14px;width:5px;height:9px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}.lista .cuenta{font-weight:600;color:var(--gris);margin-left:6px}
 .errores{position:absolute;left:615px;top:24px;width:355px;padding:16px 18px;border-radius:10px;background:var(--rojo-claro);border-left:4px solid var(--rojo);font-size:14.5px;line-height:1.45}
 .errores h3{margin:0 0 6px;font:700 20px var(--f-disp);color:var(--rojo)}
 .errores ul{margin:0;padding-left:18px}
@@ -217,8 +217,8 @@ td.sd{color:var(--rojo)}
 
 <!-- 8. Cierre -->
 <div class="esc" id="e7">
-  <div class="lista">
-    <div class="lbl" style="padding:0;border:0;background:none">Antes de entregar los bloques 9 y 10</div>
+  <div class="lista int" id="lista7">
+    <div class="lbl" style="padding:0;border:0;background:none">Antes de entregar los bloques 9 y 10 <span class="cuenta" id="cuenta7">0 de 7</span></div>
     <div>Cada casilla tiene una sola línea y dice algo concreto de vuestro caso.</div>
     <div>En «a quién afecta» aparecen servicios o grupos de pacientes con nombre.</div>
     <div>Cada dato dice de dónde sale: sobre D, sobres B y C, fabricante. Si no hay, pone «sin dato».</div>
@@ -461,6 +461,20 @@ document.addEventListener("DOMContentLoaded",repintar);
   window.addEventListener("resize",escalar);
   if(window.ResizeObserver){new ResizeObserver(escalar).observe($("marco"));}
   pintar();escalar();
+})();
+</script>
+<script>
+(function(){
+  var l=document.getElementById("lista7");if(!l)return;
+  var it=[].slice.call(l.querySelectorAll("div:not(.lbl)")),c=document.getElementById("cuenta7");
+  function cnt(){var n=it.filter(function(d){return d.getAttribute("aria-checked")==="true";}).length;c.textContent=n+" de "+it.length+(n===it.length?" · listo":"");}
+  it.forEach(function(d){
+    d.className="chk";d.setAttribute("role","checkbox");d.setAttribute("aria-checked","false");d.tabIndex=0;
+    function tg(ev){ev.stopPropagation();d.setAttribute("aria-checked",d.getAttribute("aria-checked")==="true"?"false":"true");cnt();}
+    d.addEventListener("click",tg);
+    d.addEventListener("keydown",function(ev){if(ev.key===" "||ev.key==="Enter"){ev.preventDefault();tg(ev);}});
+  });
+  cnt();
 })();
 </script>
 </body>
